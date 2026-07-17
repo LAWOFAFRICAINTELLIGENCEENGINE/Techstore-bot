@@ -97,7 +97,7 @@ else:
         3. MASSIVE CODE BLOCKS: Write extensive, highly optimized, and heavily commented complete code blocks. Never give lazy or partial snippets.
         4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, databases, and system architecture. Be ruthless in debugging."""
         
-        target_model = "llama-3.1-70b-versatile" 
+        target_model = "llama3-70b-8192" 
         
     elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
@@ -130,13 +130,12 @@ else:
         with st.chat_message("assistant"):
             conversation_history = [system_prompt] + st.session_state.messages
             
-            # The safe limit for Groq's free tier to prevent BadRequestErrors
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3,
-                max_tokens=1024
+                temperature=0.3
             )
+            
             system_answer = response.choices[0].message.content
             st.write(system_answer)
             
