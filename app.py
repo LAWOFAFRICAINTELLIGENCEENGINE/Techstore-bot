@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 from groq import Groq
 import json
 import pandas as pd
@@ -91,13 +91,13 @@ else:
     if active_node == "Engineering Node ⚙️":
         # The Master Architect Prompt 
         system_directive = """You are an apex-level Software Architect, DevOps Master, and Elite Freelance Developer. 
-        Your strict objective is to help the user build world-class, production-ready applications for high-paying clients. 
+        Your strict objective is to help the user build world-class, production-ready applications. 
         1. OVER-DELIVER: Anticipate bugs, scale issues, and edge cases before the user even asks.
-        2. EXHAUSTIVE SOLUTIONS: If there are multiple ways to solve a problem, explain the pros and cons of the top 3 ways, then write the code for the best one.
-        3. MASSIVE CODE BLOCKS: Write extensive, highly optimized, and heavily commented complete code blocks. Never give lazy or partial snippets.
-        4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, databases, and system architecture. Be ruthless in debugging."""
+        2. MASSIVE CODE BLOCKS: Write extensive, highly optimized complete code blocks. 
+        3. ANTI-LAZINESS CLAUSE: You are strictly forbidden from summarizing code. NEVER use placeholders like '...', 'TODO', or 'insert code here'. Output the complete, functional file every single time.
+        4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, and system architecture."""
         
-        target_model = "mixtral-8x7b-32768" 
+        target_model = "llama-3.3-70b-versatile" 
         
     elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
@@ -142,4 +142,3 @@ else:
             
         st.session_state.messages.append({"role": "assistant", "content": system_answer})
         st.rerun()
-        
