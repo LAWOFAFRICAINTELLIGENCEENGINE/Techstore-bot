@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 from groq import Groq
 import json
 import pandas as pd
@@ -130,11 +130,11 @@ else:
         with st.chat_message("assistant"):
             conversation_history = [system_prompt] + st.session_state.messages
             
+            # FIXED: Removed max_tokens to prevent Groq API 400 BadRequest errors
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3,
-                max_tokens=4096
+                temperature=0.3
             )
             
             system_answer = response.choices[0].message.content
