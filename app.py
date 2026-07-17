@@ -130,14 +130,12 @@ else:
         with st.chat_message("assistant"):
             conversation_history = [system_prompt] + st.session_state.messages
             
-            # Capped at 4096 tokens to prevent Groq servers from rejecting your global app
+            # We completely removed the max_tokens line to stop the crash
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3, 
-                max_tokens=4096 
+                temperature=0.3
             )
-            
             system_answer = response.choices[0].message.content
             st.write(system_answer)
             
