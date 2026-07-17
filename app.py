@@ -135,7 +135,7 @@ else:
                 model=target_model,
                 messages=conversation_history,
                 temperature=0.3
-            )
+    )
             system_answer = response.choices[0].message.content
             st.write(system_answer)
             
