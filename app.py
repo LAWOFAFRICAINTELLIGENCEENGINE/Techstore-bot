@@ -97,7 +97,7 @@ else:
         3. MASSIVE CODE BLOCKS: Write extensive, highly optimized, and heavily commented complete code blocks. Never give lazy or partial snippets.
         4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, databases, and system architecture. Be ruthless in debugging."""
         
-        target_model = "llama3-70b-8192" 
+        target_model = "mixtral-8x7b-32768" 
         
     elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
@@ -133,7 +133,8 @@ else:
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3
+                temperature=0.3,
+                max_tokens=4096
             )
             
             system_answer = response.choices[0].message.content
@@ -141,3 +142,4 @@ else:
             
         st.session_state.messages.append({"role": "assistant", "content": system_answer})
         st.rerun()
+        
