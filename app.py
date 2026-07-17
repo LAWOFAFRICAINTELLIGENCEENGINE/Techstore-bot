@@ -20,7 +20,7 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "query_count" not in st.session_state:
-    st.session_state.query_count = 0 # Tracks how many questions the AI answers
+    st.session_state.query_count = 0 
 
 # 3. Dynamic Inventory Architecture (The Real-World Data)
 warehouse_database = {
@@ -31,29 +31,37 @@ warehouse_database = {
 }
 inventory_json = json.dumps(warehouse_database, indent=2)
 
-# ==========================================
+# 
+
 # 4. MULTI-NODE ROUTING (The Sidebar)
-# ==========================================
+# 
+
 with st.sidebar:
     st.title("🎛️ System Routing")
     st.write("Select computational node:")
     
-    # This creates the toggle to switch between departments
-    active_node = st.radio("Active Node", ["Support Node 🎧", "Sales Node 🛒", "Admin Telemetry 📊"])
+    # FIXED: Added the Engineering Node to the menu
+    active_node = st.radio("Active Node", [
+        "Engineering Node ⚙️", 
+        "Support Node 🎧", 
+        "Sales Node 🛒", 
+        "Admin Telemetry 📊"
+    ])
     
     st.divider()
     if st.button("🗑️ Terminate Session"):
         st.session_state.messages = []
         st.rerun()
 
-# ==========================================
+# 
+
 # 5. ADMIN TELEMETRY DASHBOARD
-# ==========================================
+# 
+
 if active_node == "Admin Telemetry 📊":
     st.title("📊 Executive Telemetry Dashboard")
     st.write("Secure infrastructure metrics and warehouse data.")
     
-    # Create 3 columns for professional metric tracking
     col1, col2, col3 = st.columns(3)
     col1.metric(label="Total AI Queries Processed", value=st.session_state.query_count)
     col2.metric(label="Active Sessions", value="1 (You)")
@@ -62,11 +70,11 @@ if active_node == "Admin Telemetry 📊":
     st.divider()
     
     st.subheader("📦 Live Warehouse Inventory")
-    # Convert our Python dictionary into a beautiful visual table using pandas
     df = pd.DataFrame.from_dict(warehouse_database, orient='index')
     st.dataframe(df, use_container_width=True)
 
-# ==========================================
+# 
+
 # 6. AI INTERFACE (Sales, Support, & Engineering)
 # 
 
@@ -89,7 +97,6 @@ else:
         3. MASSIVE CODE BLOCKS: Write extensive, highly optimized, and heavily commented complete code blocks. Never give lazy or partial snippets.
         4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, databases, and system architecture. Be ruthless in debugging."""
         
-        # Using the smartest available model for complex reasoning
         target_model = "llama-3.1-70b-versatile" 
         
     elif active_node == "Support Node 🎧":
@@ -105,30 +112,30 @@ else:
         
     system_prompt = {"role": "system", "content": system_directive}
 
-    # Draw previous messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-    # Engine Input
     prompt = st.chat_input("Enter client requirements or architecture queries here...")
 
     if prompt:
         st.session_state.query_count += 1
         
         st.session_state.messages.append({"role": "user", "content": prompt})
+        
+        # FIXED: Corrected the typo 'chatPUSHING_message' to 'chat_message'
         with st.chat_message("user"):
             st.write(prompt)
         
         with st.chat_message("assistant"):
             conversation_history = [system_prompt] + st.session_state.messages
             
-            # PUSHING THE API TO ITS ABSOLUTE LIMITS
+            # Capped at 4096 tokens to prevent Groq servers from rejecting your global app
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3, # Balanced for high accuracy but creative architecture
-                max_tokens=8000 # Forces maximum output length for massive code generation
+                temperature=0.3, 
+                max_tokens=4096 
             )
             
             system_answer = response.choices[0].message.content
@@ -136,4 +143,3 @@ else:
             
         st.session_state.messages.append({"role": "assistant", "content": system_answer})
         st.rerun()
-
