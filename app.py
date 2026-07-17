@@ -67,8 +67,9 @@ if active_node == "Admin Telemetry 📊":
     st.dataframe(df, use_container_width=True)
 
 # ==========================================
-# 6. SALES & SUPPORT AI INTERFACE
-# ==========================================
+# 6. AI INTERFACE (Sales, Support, & Engineering)
+# 
+
 else: 
     st.title(f"TechStore {active_node}")
     
@@ -78,14 +79,29 @@ else:
         st.error("Authentication Error: Missing API Credentials.")
         st.stop()
 
-    # Dynamic System Prompts based on which node the user selected
-    if active_node == "Support Node 🎧":
+    # --- DYNAMIC SYSTEM PROMPTS (MAXIMIZED CAPABILITY) ---
+    if active_node == "Engineering Node ⚙️":
+        # The Master Architect Prompt 
+        system_directive = """You are an apex-level Software Architect, DevOps Master, and Elite Freelance Developer. 
+        Your strict objective is to help the user build world-class, production-ready applications for high-paying clients. 
+        1. OVER-DELIVER: Anticipate bugs, scale issues, and edge cases before the user even asks.
+        2. EXHAUSTIVE SOLUTIONS: If there are multiple ways to solve a problem, explain the pros and cons of the top 3 ways, then write the code for the best one.
+        3. MASSIVE CODE BLOCKS: Write extensive, highly optimized, and heavily commented complete code blocks. Never give lazy or partial snippets.
+        4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, databases, and system architecture. Be ruthless in debugging."""
+        
+        # Using the smartest available model for complex reasoning
+        target_model = "llama-3.1-70b-versatile" 
+        
+    elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
         Rules: 30-day returns, 15% restocking fee on unsealed items.
         LIVE INVENTORY DATA: {inventory_json}"""
-    else:
+        target_model = "llama-3.1-8b-instant"
+        
+    else: # Sales Node
         system_directive = f"""You are the TechStore Sales Node. Your strict objective is to upsell, explain product specs, and encourage purchases. Be highly enthusiastic.
         LIVE INVENTORY DATA: {inventory_json}"""
+        target_model = "llama-3.1-8b-instant"
         
     system_prompt = {"role": "system", "content": system_directive}
 
@@ -95,10 +111,9 @@ else:
             st.write(message["content"])
 
     # Engine Input
-    prompt = st.chat_input("Input parameters or query here...")
+    prompt = st.chat_input("Enter client requirements or architecture queries here...")
 
     if prompt:
-        # Increase the query counter for the Admin Dashboard!
         st.session_state.query_count += 1
         
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -108,10 +123,12 @@ else:
         with st.chat_message("assistant"):
             conversation_history = [system_prompt] + st.session_state.messages
             
+            # PUSHING THE API TO ITS ABSOLUTE LIMITS
             response = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model=target_model,
                 messages=conversation_history,
-                temperature=0.2 
+                temperature=0.3, # Balanced for high accuracy but creative architecture
+                max_tokens=8000 # Forces maximum output length for massive code generation
             )
             
             system_answer = response.choices[0].message.content
