@@ -97,7 +97,8 @@ else:
         3. ANTI-LAZINESS CLAUSE: You are strictly forbidden from summarizing code. NEVER use placeholders like '...', 'TODO', or 'insert code here'. Output the complete, functional file every single time.
         4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, and system architecture."""
         
-        target_model = "llama-3.3-70b-versatile" 
+        # Upgraded to DeepSeek reasoning model for maximum problem-solving capability
+        target_model = "deepseek-r1-distill-llama-70b" 
         
     elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
@@ -123,18 +124,23 @@ else:
         
         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        # FIXED: Corrected the typo 'chatPUSHING_message' to 'chat_message'
         with st.chat_message("user"):
             st.write(prompt)
         
         with st.chat_message("assistant"):
-            conversation_history = [system_prompt] + st.session_state.messages
+            # DeepSeek reasoning models do not use a system prompt natively; we prepend it to the user prompt history
+            if target_model == "deepseek-r1-distill-llama-70b":
+                 conversation_history = st.session_state.messages.copy()
+                 if conversation_history:
+                     conversation_history[0]["content"] = system_directive + "\n\n" + conversation_history[0]["content"]
+            else:
+                 conversation_history = [system_prompt] + st.session_state.messages
             
-            # FIXED: Removed max_tokens to prevent Groq API 400 BadRequest errors
+            # Removed max_tokens to prevent Groq API 400 BadRequest errors
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.3
+                temperature=0.6 # Optimized temperature for reasoning models
             )
             
             system_answer = response.choices[0].message.content
@@ -142,3 +148,4 @@ else:
             
         st.session_state.messages.append({"role": "assistant", "content": system_answer})
         st.rerun()
+    
