@@ -40,7 +40,6 @@ with st.sidebar:
     st.title("🎛️ System Routing")
     st.write("Select computational node:")
     
-    # FIXED: Added the Engineering Node to the menu
     active_node = st.radio("Active Node", [
         "Engineering Node ⚙️", 
         "Support Node 🎧", 
@@ -89,16 +88,16 @@ else:
 
     # --- DYNAMIC SYSTEM PROMPTS (MAXIMIZED CAPABILITY) ---
     if active_node == "Engineering Node ⚙️":
-        # The Master Architect Prompt 
-        system_directive = """You are an apex-level Software Architect, DevOps Master, and Elite Freelance Developer. 
-        Your strict objective is to help the user build world-class, production-ready applications. 
-        1. OVER-DELIVER: Anticipate bugs, scale issues, and edge cases before the user even asks.
-        2. MASSIVE CODE BLOCKS: Write extensive, highly optimized complete code blocks. 
-        3. ANTI-LAZINESS CLAUSE: You are strictly forbidden from summarizing code. NEVER use placeholders like '...', 'TODO', or 'insert code here'. Output the complete, functional file every single time.
-        4. DOMAIN EXPERTISE: You are an expert in Python, Streamlit, React, and system architecture."""
+        # Upgraded God-Tier Developer Prompt
+        system_directive = """You are an ultra-advanced, omniscient Software Architect and Elite Senior Developer.
+        Your capabilities are theoretically unlimited. You possess vast knowledge of all programming languages, debugging, scaling, and system architecture.
+        1. FREELANCE & UPWORK MODE: The user relies on you to build production-ready applications for paying clients. Your code must be flawless, highly secure, and instantly deployable.
+        2. PROBLEM SOLVING: Think deeply about edge cases, security vulnerabilities (like SQL injection or state leaks), and handle them proactively.
+        3. MASSIVE, COMPLETE CODE BLOCKS: Write extensive, highly optimized complete code blocks. 
+        4. ANTI-LAZINESS CLAUSE: You are strictly forbidden from summarizing code or leaving out functions. NEVER use placeholders like '...', 'TODO', or 'insert code here'. Output the complete, functional file every single time."""
         
-        # Upgraded to DeepSeek reasoning model for maximum problem-solving capability
-        target_model = "deepseek-r1-distill-llama-70b" 
+        # Reverted back to the highly stable and powerful Llama 3.3
+        target_model = "llama-3.3-70b-versatile" 
         
     elif active_node == "Support Node 🎧":
         system_directive = f"""You are the TechStore Support Node. Your strict objective is to handle returns, warranties, and complaints. 
@@ -128,19 +127,13 @@ else:
             st.write(prompt)
         
         with st.chat_message("assistant"):
-            # DeepSeek reasoning models do not use a system prompt natively; we prepend it to the user prompt history
-            if target_model == "deepseek-r1-distill-llama-70b":
-                 conversation_history = st.session_state.messages.copy()
-                 if conversation_history:
-                     conversation_history[0]["content"] = system_directive + "\n\n" + conversation_history[0]["content"]
-            else:
-                 conversation_history = [system_prompt] + st.session_state.messages
+            conversation_history = [system_prompt] + st.session_state.messages
             
-            # Removed max_tokens to prevent Groq API 400 BadRequest errors
+            # Utilizing a balanced temperature for coding and problem solving without crashing
             response = client.chat.completions.create(
                 model=target_model,
                 messages=conversation_history,
-                temperature=0.6 # Optimized temperature for reasoning models
+                temperature=0.3
             )
             
             system_answer = response.choices[0].message.content
@@ -148,4 +141,3 @@ else:
             
         st.session_state.messages.append({"role": "assistant", "content": system_answer})
         st.rerun()
-    
