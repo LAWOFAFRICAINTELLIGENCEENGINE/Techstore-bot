@@ -1,5 +1,5 @@
 streamlit
 groq
 google-generativeai
-pandas 
-streamlitgroqgoogle-generativeaipandasopenai5.
+pandas
+openai
