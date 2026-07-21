@@ -101,11 +101,7 @@ if show_telemetry:
 # 6. UNIVERSAL SUPER-SYSTEM INTERFACE
 else:
     st.title("TechStore Universal Super-System 🌪️")
-
-    st.write("XAI Key:", "✅ Loaded" if "XAI_API_KEY" in st.secrets else "❌ Missing")
-    st.write("Gemini Key:", "✅ Loaded" if "GEMINI_API_KEY" in st.secrets else "❌ Missing")
-    st.write("Groq Key:", "✅ Loaded" if "GROQ_API_KEY" in st.secrets else "❌ Missing")
-    
+             
     
     # Render Chat History
     for message in st.session_state.messages:
@@ -116,24 +112,26 @@ else:
     prompt = st.chat_input("Enter your command for the Omni-System...")
 
     if prompt:
-        # Update Telemetry & Save User Prompt
-        st.session_state.query_count += 1
-        st.session_state.messages.append({"role": "user", "content": prompt})
+    st.write("DEBUG 1: User prompt received")
+
+    # Update Telemetry & Save User Prompt
+    st.session_state.query_count += 1
+    st.session_state.messages.append({"role": "user", "content": prompt})
         
         with st.chat_message("user"):
             st.write(prompt)
         
         with st.chat_message("assistant"):
             try:
-                # ==============================================================
-                # STAGE 1: GROK (xAI) - THE RESEARCHER & CONTEXT ENGINE
-                # ==============================================================
+    st.write("DEBUG 2: Main pipeline started")
+
+    # ==============================================================
                 with st.spinner("🔍 Brain 1 (Grok/xAI): Analyzing initial parameters..."):
                     try:
                         xai_client = OpenAI(
-                            api_key=st.secrets["XAI_API_KEY"],
-                            base_url="https://api.x.ai/v1",
-                        )
+    api_key=st.secrets["XAI_API_KEY"],
+    base_url="https://api.x.ai/v1"
+)
                         grok_response = xai_client.chat.completions.create(
                             model="grok-beta",
                             messages=[
