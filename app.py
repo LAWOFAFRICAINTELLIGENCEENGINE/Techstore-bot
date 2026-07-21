@@ -58,7 +58,7 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "query_count" not in st.session_state:
-    st.session_state.query_count = 0 
+    st.session_state.query_count = [] 
 
 3. Dynamic Inventory Architecture 
 
