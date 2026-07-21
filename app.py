@@ -101,7 +101,18 @@ if show_telemetry:
 # 6. UNIVERSAL SUPER-SYSTEM INTERFACE
 else: 
     st.title("TechStore Universal Super-System 🌪️")
-        
+
+else:
+    st.title("TechStore Universal Super-System 🌪️")
+
+    st.write("XAI Key:", "✅ Loaded" if "XAI_API_KEY" in st.secrets else "❌ Missing")
+    st.write("Gemini Key:", "✅ Loaded" if "GEMINI_API_KEY" in st.secrets else "❌ Missing")
+    st.write("Groq Key:", "✅ Loaded" if "GROQ_API_KEY" in st.secrets else "❌ Missing")
+
+    # Render Chat History
+    for message in st.session_state.messages:
+        ...
+    
     # Render Chat History
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
