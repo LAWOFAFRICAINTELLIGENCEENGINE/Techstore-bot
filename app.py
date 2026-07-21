@@ -55,3 +55,93 @@ warehouse_database = {
 }
 
 inventory_json = json.dumps(warehouse_database, indent=2)
+
+# =====================================================
+# SIDEBAR
+# =====================================================
+
+with st.sidebar:
+    st.title("🌪️ Omni-Control")
+
+    st.success("TechStore Universal Super-System Online")
+
+    st.divider()
+
+    show_health = st.toggle("🩺 Health Monitor")
+
+    show_inventory = st.toggle("📦 Inventory")
+
+    show_admin = st.toggle("🛠️ Admin Mode")
+
+    st.divider()
+
+    if st.button("🗑️ Clear Conversation"):
+        st.session_state.messages = []
+        st.rerun()
+
+# =====================================================
+# MAIN INTERFACE
+# =====================================================
+
+st.title("🌪️ TechStore Universal Super-System")
+
+st.caption(
+    "An intelligent AI assistant for coding, research, business, writing, automation and problem solving."
+)
+
+# =====================================================
+# HEALTH MONITOR
+# =====================================================
+
+if show_health:
+
+    health = st.session_state.system_health
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("System Status", health["status"])
+
+    col2.metric("Queries", st.session_state.query_count)
+
+    st.metric("Last Check", health["last_check"])
+
+    st.metric("Response Time", f'{health["response_time"]:.2f}s')
+
+    st.metric("Last Error", health["last_error"])
+
+# =====================================================
+# INVENTORY
+# =====================================================
+
+if show_inventory:
+
+    df = pd.DataFrame.from_dict(
+        warehouse_database,
+        orient="index"
+    )
+
+    st.dataframe(df, use_container_width=True)
+
+# =====================================================
+# ADMIN MODE
+# =====================================================
+
+if show_admin:
+
+    st.subheader("Developer Dashboard")
+
+    st.json(st.session_state.system_health)
+
+# =====================================================
+# CHAT HISTORY
+# =====================================================
+
+for message in st.session_state.messages:
+
+    with st.chat_message(message["role"]):
+
+        st.markdown(message["content"])
+
+prompt = st.chat_input(
+    "Ask TechStore Universal Super-System anything..."
+)
