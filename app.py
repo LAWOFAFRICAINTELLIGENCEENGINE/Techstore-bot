@@ -72,7 +72,7 @@ if prompt:
                 except Exception as e:
                     grok_context = f"xAI Bypass Warning: Proceeding to Brain 2. Error: {e}"
 
-                with st.expander("👁️ View Brain 1 (xAI) Output"):
+                with st.expander("hide Brain 1 (xAI) Output"):
                     st.write(grok_context)
 
             # 
