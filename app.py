@@ -53,12 +53,15 @@ st.markdown("""
 }  
 </style>  """, unsafe_allow_html=True)
 
-2. Initialize State & Telemetry Trackers
+# 2. Initialize State & Telemetry Trackers 
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "query_count" not in st.session_state:
-    st.session_state.query_count = [] 
+if "messages" not in 
+st.session_state:
+    st.session_state.messages = []
+
+if "query_count" not in 
+st.session_state:
+    st.session_state.query_count = 0 
 
 3. Dynamic Inventory Architecture 
 
