@@ -145,3 +145,35 @@ for message in st.session_state.messages:
 prompt = st.chat_input(
     "Ask TechStore Universal Super-System anything..."
 )
+
+# =====================================================
+# AI INITIALIZATION
+# =====================================================
+
+xai_client = None
+groq_client = None
+gemini_model = None
+
+try:
+    xai_client = OpenAI(
+        api_key=st.secrets["XAI_API_KEY"],
+        base_url="https://api.x.ai/v1"
+    )
+    st.session_state.system_health["brains"]["xai"] = "Online"
+except Exception:
+    st.session_state.system_health["brains"]["xai"] = "Offline"
+
+try:
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+    gemini_model = genai.GenerativeModel("gemini-1.5-pro")
+    st.session_state.system_health["brains"]["gemini"] = "Online"
+except Exception:
+    st.session_state.system_health["brains"]["gemini"] = "Offline"
+
+try:
+    groq_client = Groq(
+        api_key=st.secrets["GROQ_API_KEY"]
+    )
+    st.session_state.system_health["brains"]["groq"] = "Online"
+except Exception:
+    st.session_state.system_health["brains"]["groq"] = "Offline"
