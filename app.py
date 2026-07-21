@@ -28,6 +28,23 @@ if "query_count" not in st.session_state:
     st.session_state.query_count = 0
 
 # -------------------------------------------------
+# SYSTEM HEALTH
+# -------------------------------------------------
+
+if "system_health" not in st.session_state:
+    st.session_state.system_health = {
+        "status": "Online",
+        "last_check": "Not Checked",
+        "response_time": 0.0,
+        "last_error": "None",
+        "brains": {
+            "xai": "Unknown",
+            "gemini": "Unknown",
+            "groq": "Unknown"
+        }
+    }
+
+# -------------------------------------------------
 # INVENTORY DATABASE
 # -------------------------------------------------
 
@@ -154,26 +171,45 @@ xai_client = None
 groq_client = None
 gemini_model = None
 
+# xAI
 try:
     xai_client = OpenAI(
         api_key=st.secrets["XAI_API_KEY"],
         base_url="https://api.x.ai/v1"
     )
     st.session_state.system_health["brains"]["xai"] = "Online"
-except Exception:
+except Exception as e:
     st.session_state.system_health["brains"]["xai"] = "Offline"
+    st.session_state.system_health["last_error"] = str(e)
 
+# Gemini
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
     gemini_model = genai.GenerativeModel("gemini-1.5-pro")
     st.session_state.system_health["brains"]["gemini"] = "Online"
-except Exception:
+except Exception as e:
     st.session_state.system_health["brains"]["gemini"] = "Offline"
+    st.session_state.system_health["last_error"] = str(e)
 
+# Groq
 try:
     groq_client = Groq(
         api_key=st.secrets["GROQ_API_KEY"]
     )
     st.session_state.system_health["brains"]["groq"] = "Online"
-except Exception:
+except Exception as e:
     st.session_state.system_health["brains"]["groq"] = "Offline"
+    st.session_state.system_health["last_error"] = str(e)
+
+st.session_state.system_health["last_check"] = "Completed"
+
+brains = st.session_state.system_health["brains"]
+
+if (
+    brains["xai"] == "Online"
+    and brains["gemini"] == "Online"
+    and brains["groq"] == "Online"
+):
+    st.session_state.system_health["status"] = "All AI Providers Online"
+else:
+    st.session_state.system_health["status"] = "Running with Available Providers"
