@@ -9,10 +9,48 @@ st.set_page_config(page_title="TechStore Omni-Pipeline", page_icon="🌪️", la
 
 st.markdown("""
 <style>
+/* --- CUSTOM SEND BUTTON (Green + Arrow with Sparkle) --- */
 [data-testid="stChatInputSubmitButton"] {
     background-color: #1EBE55 !important;
-    color: white !important;
     border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Hide the default Streamlit plane icon */
+[data-testid="stChatInputSubmitButton"] svg {
+    display: none !important;
+}
+
+/* Inject the custom Sparkle + Hollow Arrow Icon */
+[data-testid="stChatInputSubmitButton"]::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 2L11 13' /%3E%3Cpath d='M22 2l-7 20-4-9-9-4 20-7z' /%3E%3Cpath d='M5 13l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z' fill='white' stroke='none' /%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* --- CUSTOM 3-DOTS APP MENU --- */
+/* Hide the default Streamlit hamburger menu */
+[data-testid="baseButton-header"] svg {
+    display: none !important;
+}
+
+/* Inject 3 vertical dots */
+[data-testid="baseButton-header"]::after {
+    content: '\\22EE'; 
+    font-size: 26px;
+    font-weight: bold;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
 }
 </style>
 """, unsafe_allow_html=True)
