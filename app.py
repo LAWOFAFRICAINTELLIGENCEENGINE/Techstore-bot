@@ -74,28 +74,32 @@ warehouse_database = {
 inventory_json = json.dumps(warehouse_database, indent=2)
 
 # =====================================================
+# =====================================================
 # SIDEBAR
 # =====================================================
 
 with st.sidebar:
     st.title("🌪️ Omni-Control")
 
-    st.success("TechStore Universal Super-System Online")
+    st.success("🟢 TechStore Universal Super-System Online")
 
     st.divider()
 
-    show_health = st.toggle("🩺 Health Monitor")
+    st.markdown("### 🩺 Health Monitor")
+    st.success("Always Active")
 
-    show_inventory = st.toggle("📦 Inventory")
+    st.markdown("### 📦 Inventory")
+    st.success("Always Active")
 
-    show_admin = st.toggle("🛠️ Admin Mode")
+    st.markdown("### 🛠️ Admin Mode")
+    st.success("Always Active")
 
     st.divider()
 
     if st.button("🗑️ Clear Conversation"):
         st.session_state.messages = []
         st.rerun()
-
+        
 # =====================================================
 # MAIN INTERFACE
 # =====================================================
@@ -110,9 +114,7 @@ st.caption(
 # HEALTH MONITOR
 # =====================================================
 
-if show_health:
-
-    health = st.session_state.system_health
+health = st.session_state.system_health
 
     col1, col2 = st.columns(2)
 
