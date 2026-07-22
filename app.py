@@ -665,12 +665,11 @@ Execution Plan
 def optimize_prompt(prompt):
 
     if len(prompt) < 15:
-
-        prompt += """
+        prompt += 
 Please provide a professional, detailed,
 well-structured response with complete code
 where applicable.
-"""
+
 
     return prompt.strip()
 
