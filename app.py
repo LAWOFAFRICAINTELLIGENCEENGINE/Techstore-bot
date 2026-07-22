@@ -400,6 +400,17 @@ def ask_ai(user_prompt):
     # -----------------------------
     # CACHE CHECK
     # -----------------------------
+# =====================================================
+# TECHSTORE AI ENGINE v2
+# =====================================================
+
+def ask_ai(user_prompt):
+
+    start = time.time()
+
+    # -----------------------------
+    # CACHE CHECK
+    # -----------------------------
 
     cached = cache_get(user_prompt)
 
@@ -410,7 +421,6 @@ def ask_ai(user_prompt):
     remember("user", user_prompt)
 
     provider = choose_provider(user_prompt)
-
     answer = None
 
     # =====================================================
@@ -422,35 +432,25 @@ def ask_ai(user_prompt):
         try:
 
             response = safe_execute(
-
                 xai_client.chat.completions.create,
-
                 model="grok-beta",
-
                 messages=[
-
                     {
                         "role": "system",
                         "content": SYSTEM_PROMPT
                     },
-
                     {
                         "role": "user",
                         "content": user_prompt
                     }
-
                 ]
-
             )
 
             if response:
-
                 answer = response.choices[0].message.content
 
         except Exception as e:
-
             log_error(e)
-
 
     # =====================================================
     # GEMINI
