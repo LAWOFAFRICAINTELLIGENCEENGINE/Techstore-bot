@@ -311,3 +311,65 @@ def choose_provider(prompt: str):
         return "gemini"
 
     return "xai"
+
+# =====================================================
+# ADVANCED SYSTEM CORE
+# =====================================================
+
+from collections import deque
+import hashlib
+
+# -------- Session Initialization --------
+
+if "response_cache" not in st.session_state:
+    st.session_state.response_cache = {}
+
+if "conversation_memory" not in st.session_state:
+    st.session_state.conversation_memory = deque(maxlen=20)
+
+if "performance" not in st.session_state:
+    st.session_state.performance = {
+        "total_requests": 0,
+        "successful_requests": 0,
+        "failed_requests": 0,
+        "average_response_time": 0.0,
+        "fastest_response": None,
+        "slowest_response": None
+    }
+
+# -------- Cache Utilities --------
+
+def cache_key(prompt: str):
+    return hashlib.sha256(prompt.encode()).hexdigest()
+
+def cache_get(prompt):
+    return st.session_state.response_cache.get(cache_key(prompt))
+
+def cache_save(prompt, response):
+    st.session_state.response_cache[cache_key(prompt)] = response
+
+# -------- Conversation Memory --------
+
+def remember(role, content):
+    st.session_state.conversation_memory.append({
+        "role": role,
+        "content": content
+    })
+
+# -------- Performance Monitor --------
+
+def record_response(seconds, success=True):
+
+    perf = st.session_state.performance
+
+    perf["total_requests"] += 1
+
+    if success:
+        perf["successful_requests"] += 1
+    else:
+        perf["failed_requests"] += 1
+
+    if perf["fastest_response"] is None:
+        perf["fastest_response"] = seconds
+
+    if perf["slowest_response
