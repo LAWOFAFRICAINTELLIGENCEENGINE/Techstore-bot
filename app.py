@@ -451,6 +451,7 @@ def ask_ai(user_prompt):
 
             log_error(e)
 
+
     # =====================================================
     # GEMINI
     # =====================================================
@@ -460,19 +461,14 @@ def ask_ai(user_prompt):
         try:
 
             response = safe_execute(
-
                 gemini_model.generate_content,
-
                 user_prompt
-
             )
 
             if response:
-
                 answer = response.text
 
         except Exception as e:
-
             log_error(e)
 
     # =====================================================
@@ -484,97 +480,26 @@ def ask_ai(user_prompt):
         try:
 
             response = safe_execute(
-
                 groq_client.chat.completions.create,
-
                 model="llama-3.3-70b-versatile",
-
                 messages=[
-
                     {
                         "role": "system",
                         "content": SYSTEM_PROMPT
                     },
-
                     {
                         "role": "user",
                         "content": user_prompt
                     }
-
                 ]
-
             )
 
             if response:
-
                 answer = response.choices[0].message.content
 
         except Exception as e:
-
             log_error(e)
             
-    # =====================================================
-    # GEMINI
-    # =====================================================
-
-    elif provider == "gemini" and gemini_model:
-
-        try:
-
-            response = safe_execute(
-
-                gemini_model.generate_content,
-
-                user_prompt
-
-            )
-
-            if response:
-
-                answer = response.text
-
-        except Exception as e:
-
-            log_error(e)
-
-    # =====================================================
-    # GROQ
-    # =====================================================
-
-    elif provider == "groq" and groq_client:
-
-        try:
-
-            response = safe_execute(
-
-                groq_client.chat.completions.create,
-
-                model="llama-3.3-70b-versatile",
-
-                messages=[
-
-                    {
-                        "role": "system",
-                        "content": SYSTEM_PROMPT
-                    },
-
-                    {
-                        "role": "user",
-                        "content": user_prompt
-                    }
-
-                ]
-
-            )
-
-            if response:
-
-                answer = response.choices[0].message.content
-
-        except Exception as e:
-
-            log_error(e)
-
     # =====================================================
     # FALLBACK
     # =====================================================
