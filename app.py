@@ -1269,7 +1269,7 @@ website/
 `-- images/
 """
 
-    elif project["type"] == "REST API":
+        elif project["type"] == "REST API":
 
         return """
 Recommended Folder Structure
@@ -1306,6 +1306,7 @@ project/
 |-- assets/
 |-- README.md
 `-- requirements.txt
+"""
 
 # =====================================================
 # RESPONSE ENHANCER
@@ -1321,7 +1322,12 @@ def improve_response(answer):
 
     return answer.strip() + footer
 
- def create_project_plan(prompt):
+
+# =====================================================
+# PROJECT BUILDER
+# =====================================================
+
+def create_project_plan(prompt):
 
     return (
         f"PROJECT ANALYSIS\n\n"
