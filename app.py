@@ -1026,7 +1026,155 @@ if "provider_stats" not in st.session_state:
 if "request_history" not in st.session_state:
     st.session_state.request_history = []
 
-def generate_request_id():
+# =====================================================
+# ADVANCED DIAGNOSTICS
+# =====================================================
+
+import re
+import uuid
+import platform
+import os
+import hashlib
+import time
+
+if "logs" not in st.session_state:
+    st.session_state.logs = []
+
+
+def log_event(level, message):
+
+    st.session_state.logs.append({
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "level": level,
+        "message": message
+    })
+
+    if len(st.session_state.logs) > 300:
+        st.session_state.logs.pop(0)
+
+
+def get_logs(limit=20):
+    return st.session_state.logs[-limit:]
+
+
+# =====================================================
+# CODE ANALYZER
+# =====================================================
+
+def analyze_generated_code(code):
+
+    report = {
+        "lines": len(code.splitlines()),
+        "functions": len(re.findall(r"def\s+", code)),
+        "classes": len(re.findall(r"class\s+", code)),
+        "imports": len(re.findall(r"import\s+", code))
+    }
+
+    return report
+
+
+# =====================================================
+# QUALITY SCORE
+# =====================================================
+
+def calculate_quality(answer):
+
+    score = 100
+
+    if len(answer) < 100:
+        score -= 20
+
+    if "TODO" in answer:
+        score -= 10
+
+    if "pass" in answer:
+        score -= 10
+
+    return max(score, 0)
+
+
+# =====================================================
+# AUTOMATIC LOGGER
+# =====================================================
+
+def log_response(prompt, answer):
+
+    log_event("INFO", f"Prompt: {prompt[:100]}")
+    log_event("INFO", f"Response Length: {len(answer)}")
+
+
+# =====================================================
+# CONFIGURATION & UTILITIES
+# =====================================================
+
+APP_VERSION = "2.0.0"
+
+
+def get_timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def generate_request_id(prompt):
+    return hashlib.md5(prompt.encode()).hexdigest()[:12]
+
+
+def check_api_status():
+
+    return {
+        "xai": xai_client is not None,
+        "gemini": gemini_model is not None,
+        "groq": groq_client is not None
+    }
+
+
+def get_system_summary():
+
+    return {
+        "version": APP_VERSION,
+        "time": get_timestamp(),
+        "queries": st.session_state.query_count,
+        "health": st.session_state.system_health,
+        "performance": st.session_state.performance,
+        "memory_size": len(st.session_state.memory),
+        "cache_size": len(st.session_state.cache),
+        "logs": len(st.session_state.logs)
+    }
+
+
+def emergency_reset():
+
+    st.session_state.messages = []
+    st.session_state.memory = []
+    st.session_state.cache = {}
+    st.session_state.logs = []
+
+    return "System reset completed successfully."
+
+
+def benchmark_start():
+    return time.time()
+
+
+def benchmark_end(start):
+    return round(time.time() - start, 3)
+
+
+# =====================================================
+# FINAL UTILITIES
+# =====================================================
+
+if "provider_stats" not in st.session_state:
+    st.session_state.provider_stats = {
+        "xai": 0,
+        "gemini": 0,
+        "groq": 0
+    }
+
+if "request_history" not in st.session_state:
+    st.session_state.request_history = []
+
+
+def generate_history_id():
     return str(uuid.uuid4())[:8]
 
 
@@ -1039,8 +1187,8 @@ def register_provider(provider):
 def add_history(prompt):
 
     st.session_state.request_history.append({
-        "id": generate_request_id(),
-        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "id": generate_history_id(),
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "prompt": prompt
     })
 
@@ -1064,7 +1212,7 @@ def system_information():
 
     return {
         "Application": "TechStore Universal Super-System",
-        "Version": "1.0",
+        "Version": APP_VERSION,
         "Python": platform.python_version(),
         "Operating System": platform.system(),
         "Total Queries": st.session_state.query_count,
@@ -1081,3 +1229,117 @@ def diagnostics():
         "Performance": st.session_state.performance,
         "Providers": st.session_state.provider_stats
 }
+# =====================================================
+# PROJECT ANALYZER
+# =====================================================
+
+def analyze_project(prompt):
+
+    project = {
+        "name": "Generated Project",
+        "description": prompt,
+        "type": "General",
+        "language": "Python"
+    }
+
+    text = prompt.lower()
+
+    if "streamlit" in text:
+        project["type"] = "Streamlit App"
+
+    elif "website" in text:
+        project["type"] = "Website"
+
+    elif "api" in text:
+        project["type"] = "REST API"
+
+    elif "flutter" in text:
+        project["type"] = "Flutter App"
+
+    return project
+
+
+def generate_structure(project):
+
+    if project["type"] == "Streamlit App":
+
+        return """
+Recommended Folder Structure
+
+project/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+├── assets/
+├── pages/
+└── utils/
+"""
+
+    elif project["type"] == "Website":
+
+        return """
+Recommended Folder Structure
+
+website/
+│
+├── index.html
+├── style.css
+├── script.js
+├── assets/
+└── images/
+"""
+
+    elif project["type"] == "REST API":
+
+        return """
+Recommended Folder Structure
+
+api/
+│
+├── app.py
+├── routes/
+├── models/
+├── config.py
+└── requirements.txt
+"""
+
+    elif project["type"] == "Flutter App":
+
+        return """
+Recommended Folder Structure
+
+flutter_app/
+│
+├── lib/
+├── assets/
+├── android/
+├── ios/
+└── pubspec.yaml
+"""
+
+    return """
+Recommended Folder Structure
+
+project/
+│
+├── src/
+├── assets/
+├── README.md
+└── requirements.txt
+"""
+
+
+# =====================================================
+# RESPONSE ENHANCER
+# =====================================================
+
+def improve_response(answer):
+
+    footer = """
+
+---
+✅ Generated by TechStore Universal Super-System
+"""
+
+    return answer.strip() + footer
