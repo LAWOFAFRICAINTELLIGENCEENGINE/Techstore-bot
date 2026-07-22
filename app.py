@@ -369,10 +369,25 @@ def record_response(seconds, success=True):
     else:
         perf["failed_requests"] += 1
 
+    # Fastest response
     if perf["fastest_response"] is None:
         perf["fastest_response"] = seconds
+    elif seconds < perf["fastest_response"]:
+        perf["fastest_response"] = seconds
 
-    if perf["slowest_response
+    # Slowest response
+    if perf["slowest_response"] is None:
+        perf["slowest_response"] = seconds
+    elif seconds > perf["slowest_response"]:
+        perf["slowest_response"] = seconds
+
+    # Average response time
+    total = perf["total_requests"]
+    current_avg = perf["average_response_time"]
+
+    perf["average_response_time"] = (
+        (current_avg * (total - 1)) + seconds
+    ) / total
 
 # =====================================================
 # TECHSTORE AI ENGINE v2
