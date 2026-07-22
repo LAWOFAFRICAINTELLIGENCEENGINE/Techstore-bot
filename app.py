@@ -933,3 +933,76 @@ def benchmark_start():
 def benchmark_end(start):
     return round(time.time() - start, 3)
 
+# =====================================================
+# FINAL UTILITIES
+# =====================================================
+
+import uuid
+import platform
+import os
+
+if "provider_stats" not in st.session_state:
+    st.session_state.provider_stats = {
+        "xai": 0,
+        "gemini": 0,
+        "groq": 0
+    }
+
+if "request_history" not in st.session_state:
+    st.session_state.request_history = []
+
+def generate_request_id():
+    return str(uuid.uuid4())[:8]
+
+
+def register_provider(provider):
+
+    if provider in st.session_state.provider_stats:
+        st.session_state.provider_stats[provider] += 1
+
+
+def add_history(prompt):
+
+    st.session_state.request_history.append({
+        "id": generate_request_id(),
+        "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "prompt": prompt
+    })
+
+    if len(st.session_state.request_history) > 200:
+        st.session_state.request_history.pop(0)
+
+
+def export_chat():
+
+    data = {
+        "messages": st.session_state.messages,
+        "memory": st.session_state.memory,
+        "performance": st.session_state.performance,
+        "logs": st.session_state.logs
+    }
+
+    return json.dumps(data, indent=4)
+
+
+def system_information():
+
+    return {
+        "Application": "TechStore Universal Super-System",
+        "Version": "1.0",
+        "Python": platform.python_version(),
+        "Operating System": platform.system(),
+        "Total Queries": st.session_state.query_count,
+        "Memory Size": len(st.session_state.memory),
+        "Cache Size": len(st.session_state.cache),
+        "Log Entries": len(st.session_state.logs)
+    }
+
+
+def diagnostics():
+
+    return {
+        "Health": st.session_state.system_health,
+        "Performance": st.session_state.performance,
+        "Providers": st.session_state.provider_stats
+}
