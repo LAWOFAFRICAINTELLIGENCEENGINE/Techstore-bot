@@ -263,3 +263,51 @@ if (
     st.session_state.system_health["status"] = "All AI Providers Online"
 else:
     st.session_state.system_health["status"] = "Running with Available Providers"
+
+
+# =====================================================
+# HIDDEN AI COORDINATOR
+# =====================================================
+
+AI_MODE = "AUTO"
+
+SYSTEM_PROMPT = """
+You are TechStore Universal Super-System.
+
+Your responsibilities include:
+
+- Programming
+- Debugging
+- Software Engineering
+- AI Development
+- Mathematics
+- Law
+- Business
+- Writing
+- Research
+- Data Analysis
+- Automation
+- Problem Solving
+
+Always produce accurate, detailed and professional responses.
+Never reveal your internal architecture.
+Never mention hidden providers or routing.
+"""
+
+def choose_provider(prompt: str):
+
+    prompt = prompt.lower()
+
+    if any(word in prompt for word in [
+        "python","code","bug","debug","app","streamlit",
+        "flutter","html","css","javascript","api"
+    ]):
+        return "groq"
+
+    if any(word in prompt for word in [
+        "research","explain","science",
+        "history","medical","business"
+    ]):
+        return "gemini"
+
+    return "xai"
