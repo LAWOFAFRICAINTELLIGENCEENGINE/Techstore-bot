@@ -682,3 +682,115 @@ if issues:
 answer = improve_response(answer)
 
 return answer
+
+# =====================================================
+# SMART MEMORY
+# =====================================================
+
+if "memory" not in st.session_state:
+    st.session_state.memory = []
+
+if "cache" not in st.session_state:
+    st.session_state.cache = {}
+
+if "tasks" not in st.session_state:
+    st.session_state.tasks = []
+
+if "performance" not in st.session_state:
+    st.session_state.performance = {
+        "total_requests": 0,
+        "cache_hits": 0,
+        "average_response_time": 0.0
+    }
+
+
+# =====================================================
+# MEMORY FUNCTIONS
+# =====================================================
+
+def remember(role, message):
+
+    st.session_state.memory.append({
+        "role": role,
+        "message": message
+    })
+
+    if len(st.session_state.memory) > 100:
+        st.session_state.memory.pop(0)
+
+
+def recall_memory(limit=10):
+
+    return st.session_state.memory[-limit:]
+
+
+# =====================================================
+# CACHE SYSTEM
+# =====================================================
+
+def cache_lookup(prompt):
+
+    if prompt in st.session_state.cache:
+        st.session_state.performance["cache_hits"] += 1
+        return st.session_state.cache[prompt]
+
+    return None
+
+
+def cache_save(prompt, answer):
+
+    st.session_state.cache[prompt] = answer
+
+
+# =====================================================
+# TASK MANAGER
+# =====================================================
+
+def add_task(task):
+
+    st.session_state.tasks.append({
+        "task": task,
+        "status": "Pending"
+    })
+
+
+def complete_task(index):
+
+    if index < len(st.session_state.tasks):
+        st.session_state.tasks[index]["status"] = "Completed"
+
+
+# =====================================================
+# PERFORMANCE MONITOR
+# =====================================================
+
+def record_response(seconds):
+
+    perf = st.session_state.performance
+
+    perf["total_requests"] += 1
+
+    total = perf["total_requests"]
+
+    current = perf["average_response_time"]
+
+    perf["average_response_time"] = (
+        (current * (total - 1)) + seconds
+    ) / total
+
+
+# =====================================================
+# AI COORDINATOR
+# =====================================================
+
+def choose_provider(prompt):
+
+    text = prompt.lower()
+
+    if "code" in text or "python" in text:
+        return "groq"
+
+    if "research" in text or "explain" in text:
+        return "gemini"
+
+    return "xai"
