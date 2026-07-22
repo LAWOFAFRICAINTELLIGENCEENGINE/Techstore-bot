@@ -2,6 +2,9 @@ import streamlit as st
 import json
 import pandas as pd
 import traceback
+import logging
+import time
+from datetime import datetime
 
 from groq import Groq
 import google.generativeai as genai
@@ -136,6 +139,57 @@ df = pd.DataFrame.from_dict(
 
 st.dataframe(df, use_container_width=True)
 
+
+# =====================================================
+# SELF-HEALING SYSTEM
+# =====================================================
+
+logging.basicConfig(
+    filename="techstore.log",
+    level=logging.ERROR,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+def log_error(error):
+    logging.error(traceback.format_exc())
+    st.session_state.system_health["last_error"] = str(error)
+
+def safe_execute(func, *args, retries=2, **kwargs):
+    """
+    Execute a function with automatic retry.
+    """
+    for attempt in range(retries + 1):
+        try:
+            return func(*args, **kwargs)
+
+        except Exception as e:
+
+            log_error(e)
+
+            if attempt == retries:
+                return None
+
+            time.sleep(1)
+
+def update_health():
+
+    st.session_state.system_health["last_check"] = datetime.now().strftime("%H:%M:%S")
+
+    online = 0
+
+    for provider in st.session_state.system_health["brains"].values():
+
+        if provider == "Online":
+            online += 1
+
+    if online == 3:
+        st.session_state.system_health["status"] = "Excellent"
+
+    elif online >= 1:
+        st.session_state.system_health["status"] = "Operational"
+
+    else:
+        st.session_state.system_health["status"] = "Offline"
 
 # =====================================================
 # ADMIN MODE
