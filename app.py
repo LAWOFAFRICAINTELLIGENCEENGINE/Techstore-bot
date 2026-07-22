@@ -794,3 +794,83 @@ def choose_provider(prompt):
         return "gemini"
 
     return "xai"
+
+# =====================================================
+# ADVANCED DIAGNOSTICS
+# =====================================================
+
+import re
+import datetime
+
+if "logs" not in st.session_state:
+    st.session_state.logs = []
+
+def log_event(level, message):
+
+    st.session_state.logs.append({
+        "time": str(datetime.datetime.now()),
+        "level": level,
+        "message": message
+    })
+
+    if len(st.session_state.logs) > 300:
+        st.session_state.logs.pop(0)
+
+
+def get_logs(limit=20):
+
+    return st.session_state.logs[-limit:]
+
+
+# =====================================================
+# CODE ANALYZER
+# =====================================================
+
+def analyze_generated_code(code):
+
+    report = {
+        "lines": len(code.splitlines()),
+        "functions": len(re.findall(r"def\\s+", code)),
+        "classes": len(re.findall(r"class\\s+", code)),
+        "imports": len(re.findall(r"import\\s+", code))
+    }
+
+    return report
+
+
+# =====================================================
+# QUALITY SCORE
+# =====================================================
+
+def calculate_quality(answer):
+
+    score = 100
+
+    if len(answer) < 100:
+        score -= 20
+
+    if "TODO" in answer:
+        score -= 10
+
+    if "pass" in answer:
+        score -= 10
+
+    return max(score, 0)
+
+
+# =====================================================
+# AUTOMATIC LOGGER
+# =====================================================
+
+def log_response(prompt, answer):
+
+    log_event(
+        "INFO",
+        f"Prompt: {prompt[:100]}"
+    )
+
+    log_event(
+        "INFO",
+        f"Response Length: {len(answer)}"
+    )
+    
