@@ -136,15 +136,14 @@ df = pd.DataFrame.from_dict(
 
 st.dataframe(df, use_container_width=True)
 
+
 # =====================================================
 # ADMIN MODE
 # =====================================================
 
-if show_admin:
+st.subheader("🛠️ Developer Dashboard")
 
-    st.subheader("Developer Dashboard")
-
-    st.json(st.session_state.system_health)
+st.json(st.session_state.system_health)
 
 # =====================================================
 # CHAT HISTORY
