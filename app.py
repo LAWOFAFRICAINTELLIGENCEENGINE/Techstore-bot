@@ -116,17 +116,14 @@ st.caption(
 
 health = st.session_state.system_health
 
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-    col1.metric("System Status", health["status"])
+col1.metric("System Status", health["status"])
+col2.metric("Queries", st.session_state.query_count)
 
-    col2.metric("Queries", st.session_state.query_count)
-
-    st.metric("Last Check", health["last_check"])
-
-    st.metric("Response Time", f'{health["response_time"]:.2f}s')
-
-    st.metric("Last Error", health["last_error"])
+st.metric("Last Check", health["last_check"])
+st.metric("Response Time", f'{health["response_time"]:.2f}s')
+st.metric("Last Error", health["last_error"])
 
 # =====================================================
 # INVENTORY
