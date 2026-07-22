@@ -129,14 +129,12 @@ st.metric("Last Error", health["last_error"])
 # INVENTORY
 # =====================================================
 
-if show_inventory:
+df = pd.DataFrame.from_dict(
+    warehouse_database,
+    orient="index"
+)
 
-    df = pd.DataFrame.from_dict(
-        warehouse_database,
-        orient="index"
-    )
-
-    st.dataframe(df, use_container_width=True)
+st.dataframe(df, use_container_width=True)
 
 # =====================================================
 # ADMIN MODE
