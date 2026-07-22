@@ -1306,7 +1306,6 @@ project/
 |-- assets/
 |-- README.md
 `-- requirements.txt
-"""
 
 # =====================================================
 # RESPONSE ENHANCER
