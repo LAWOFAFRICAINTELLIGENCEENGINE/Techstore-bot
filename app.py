@@ -874,3 +874,62 @@ def log_response(prompt, answer):
         f"Response Length: {len(answer)}"
     )
     
+# =====================================================
+# CONFIGURATION & UTILITIES
+# =====================================================
+
+import time
+import hashlib
+from datetime import datetime
+
+APP_VERSION = "2.0.0"
+
+def get_timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def generate_request_id(prompt):
+    return hashlib.md5(prompt.encode()).hexdigest()[:12]
+
+
+def check_api_status():
+
+    status = {
+        "xai": xai_client is not None,
+        "gemini": gemini_model is not None,
+        "groq": groq_client is not None
+    }
+
+    return status
+
+
+def get_system_summary():
+
+    return {
+        "version": APP_VERSION,
+        "time": get_timestamp(),
+        "queries": st.session_state.query_count,
+        "health": st.session_state.system_health,
+        "performance": st.session_state.performance,
+        "memory_size": len(st.session_state.memory),
+        "cache_size": len(st.session_state.cache),
+        "logs": len(st.session_state.logs)
+    }
+
+
+def emergency_reset():
+
+    st.session_state.messages = []
+    st.session_state.memory = []
+    st.session_state.cache = {}
+    st.session_state.logs = []
+
+    return "System reset completed successfully."
+
+
+def benchmark_start():
+    return time.time()
+
+def benchmark_end(start):
+    return round(time.time() - start, 3)
+
