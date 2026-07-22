@@ -530,3 +530,77 @@ def ask_ai(user_prompt):
     record_response(elapsed)
 
     return answer
+
+# =====================================================
+# PROJECT BUILDER
+# =====================================================
+
+def detect_project_request(prompt):
+
+    keywords = [
+
+        "build",
+
+        "create",
+
+        "develop",
+
+        "make",
+
+        "generate",
+
+        "application",
+
+        "website",
+
+        "app",
+
+        "system",
+
+        "software"
+
+    ]
+
+    return any(word in prompt.lower() for word in keywords)
+
+
+def create_project_plan(prompt):
+
+    return f"""
+PROJECT ANALYSIS
+
+User Request:
+{prompt}
+
+Execution Plan
+
+1. Analyze Requirements
+
+2. Choose Best Architecture
+
+3. Create Folder Structure
+
+4. Generate Files
+
+5. Review Generated Code
+
+6. Produce Final Project
+
+
+# =====================================================
+# PROMPT OPTIMIZER
+# =====================================================
+
+def optimize_prompt(prompt):
+
+    if len(prompt) < 15:
+
+        prompt += """
+
+Please provide a professional, detailed,
+well-structured response with complete code
+where applicable.
+
+
+
+    return prompt.strip()
