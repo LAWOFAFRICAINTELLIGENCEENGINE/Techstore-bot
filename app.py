@@ -827,7 +827,6 @@ def complete_task(index):
     if index < len(st.session_state.tasks):
         st.session_state.tasks[index]["status"] = "Completed"
 
-
 # =====================================================
 # PERFORMANCE MONITOR
 # =====================================================
@@ -839,7 +838,6 @@ def record_response(seconds):
     perf["total_requests"] += 1
 
     total = perf["total_requests"]
-
     current = perf["average_response_time"]
 
     perf["average_response_time"] = (
@@ -858,25 +856,26 @@ def choose_provider(prompt):
     if "code" in text or "python" in text:
         return "groq"
 
-    if "research" in text or "explain" in text:
+    elif "research" in text or "explain" in text:
         return "gemini"
 
     return "xai"
+
 
 # =====================================================
 # ADVANCED DIAGNOSTICS
 # =====================================================
 
 import re
-import datetime
 
 if "logs" not in st.session_state:
     st.session_state.logs = []
 
+
 def log_event(level, message):
 
     st.session_state.logs.append({
-        "time": str(datetime.datetime.now()),
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "level": level,
         "message": message
     })
@@ -886,7 +885,6 @@ def log_event(level, message):
 
 
 def get_logs(limit=20):
-
     return st.session_state.logs[-limit:]
 
 
@@ -896,14 +894,12 @@ def get_logs(limit=20):
 
 def analyze_generated_code(code):
 
-    report = {
+    return {
         "lines": len(code.splitlines()),
-        "functions": len(re.findall(r"def\\s+", code)),
-        "classes": len(re.findall(r"class\\s+", code)),
-        "imports": len(re.findall(r"import\\s+", code))
+        "functions": len(re.findall(r"def\s+", code)),
+        "classes": len(re.findall(r"class\s+", code)),
+        "imports": len(re.findall(r"import\s+", code))
     }
-
-    return report
 
 
 # =====================================================
@@ -932,25 +928,16 @@ def calculate_quality(answer):
 
 def log_response(prompt, answer):
 
-    log_event(
-        "INFO",
-        f"Prompt: {prompt[:100]}"
-    )
+    log_event("INFO", f"Prompt: {prompt[:100]}")
+    log_event("INFO", f"Response Length: {len(answer)}")
 
-    log_event(
-        "INFO",
-        f"Response Length: {len(answer)}"
-    )
-    
+
 # =====================================================
 # CONFIGURATION & UTILITIES
 # =====================================================
 
-import time
-import hashlib
-from datetime import datetime
-
 APP_VERSION = "2.0.0"
+
 
 def get_timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -962,13 +949,11 @@ def generate_request_id(prompt):
 
 def check_api_status():
 
-    status = {
+    return {
         "xai": xai_client is not None,
         "gemini": gemini_model is not None,
         "groq": groq_client is not None
     }
-
-    return status
 
 
 def get_system_summary():
@@ -997,6 +982,7 @@ def emergency_reset():
 
 def benchmark_start():
     return time.time()
+
 
 def benchmark_end(start):
     return round(time.time() - start, 3)
