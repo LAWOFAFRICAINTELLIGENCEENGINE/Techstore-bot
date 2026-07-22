@@ -395,8 +395,6 @@ def record_response(seconds, success=True):
 
 def ask_ai(user_prompt):
 
-    import time
-
     start = time.time()
 
     # -----------------------------
@@ -406,9 +404,7 @@ def ask_ai(user_prompt):
     cached = cache_get(user_prompt)
 
     if cached:
-
-                st.session_state.system_health["status"] = "Cache Hit"
-
+        st.session_state.system_health["status"] = "Cache Hit"
         return cached
 
     remember("user", user_prompt)
