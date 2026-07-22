@@ -674,3 +674,75 @@ TechStore Universal Super-System
 
 
     return answer + footer
+
+# =====================================================
+# PROJECT ANALYZER
+# =====================================================
+
+def analyze_project(prompt):
+
+    analysis = {
+        "language": "Unknown",
+        "framework": "Unknown",
+        "project_type": "General",
+        "complexity": "Medium"
+    }
+
+    text = prompt.lower()
+
+    if "python" in text:
+        analysis["language"] = "Python"
+
+    elif "flutter" in text:
+        analysis["language"] = "Dart"
+        analysis["framework"] = "Flutter"
+
+    elif "javascript" in text:
+        analysis["language"] = "JavaScript"
+
+    elif "html" in text:
+        analysis["language"] = "HTML/CSS"
+
+    if "website" in text:
+        analysis["project_type"] = "Website"
+
+    elif "mobile" in text or "android" in text:
+        analysis["project_type"] = "Mobile App"
+
+    elif "desktop" in text:
+        analysis["project_type"] = "Desktop Application"
+
+    elif "ai" in text:
+        analysis["project_type"] = "Artificial Intelligence"
+
+    return analysis
+
+# =====================================================
+# PROJECT STRUCTURE GENERATOR
+# =====================================================
+
+def generate_structure(info):
+
+    return f"""
+Recommended Structure
+
+project/
+
+├── README.md
+├── requirements.txt
+├── config.py
+├── main.py
+├── utils.py
+├── assets/
+├── data/
+├── templates/
+└── static/
+
+Language:
+{info['language']}
+
+Framework:
+{info['framework']}
+
+Project Type:
+{info['project_type']}
