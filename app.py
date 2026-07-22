@@ -759,7 +759,7 @@ if "memory" not in st.session_state:
     st.session_state.memory = []
 
 if "cache" not in st.session_state:
-    st.session_state.cache = {}
+    st.session_state.cache = {{}}
 
 if "tasks" not in st.session_state:
     st.session_state.tasks = []
