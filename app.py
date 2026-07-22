@@ -373,3 +373,160 @@ def record_response(seconds, success=True):
         perf["fastest_response"] = seconds
 
     if perf["slowest_response
+
+# =====================================================
+# TECHSTORE AI ENGINE v2
+# =====================================================
+
+def ask_ai(user_prompt):
+
+    import time
+
+    start = time.time()
+
+    # -----------------------------
+    # CACHE CHECK
+    # -----------------------------
+
+    cached = cache_get(user_prompt)
+
+    if cached:
+
+        st.session_state.system_health["status"] = "Cache Hit"
+
+        return cached
+
+    remember("user", user_prompt)
+
+    provider = choose_provider(user_prompt)
+
+    answer = None
+
+    # =====================================================
+    # xAI
+    # =====================================================
+
+    if provider == "xai" and xai_client:
+
+        try:
+
+            response = safe_execute(
+
+                xai_client.chat.completions.create,
+
+                model="grok-beta",
+
+                messages=[
+
+                    {
+                        "role": "system",
+                        "content": SYSTEM_PROMPT
+                    },
+
+                    {
+                        "role": "user",
+                        "content": user_prompt
+                    }
+
+                ]
+
+            )
+
+            if response:
+
+                answer = response.choices[0].message.content
+
+        except Exception as e:
+
+            log_error(e)
+
+    # =====================================================
+    # GEMINI
+    # =====================================================
+
+    elif provider == "gemini" and gemini_model:
+
+        try:
+
+            response = safe_execute(
+
+                gemini_model.generate_content,
+
+                user_prompt
+
+            )
+
+            if response:
+
+                answer = response.text
+
+        except Exception as e:
+
+            log_error(e)
+
+    # =====================================================
+    # GROQ
+    # =====================================================
+
+    elif provider == "groq" and groq_client:
+
+        try:
+
+            response = safe_execute(
+
+                groq_client.chat.completions.create,
+
+                model="llama-3.3-70b-versatile",
+
+                messages=[
+
+                    {
+                        "role": "system",
+                        "content": SYSTEM_PROMPT
+                    },
+
+                    {
+                        "role": "user",
+                        "content": user_prompt
+                    }
+
+                ]
+
+            )
+
+            if response:
+
+                answer = response.choices[0].message.content
+
+        except Exception as e:
+
+            log_error(e)
+
+    # =====================================================
+    # FALLBACK
+    # =====================================================
+
+    if not answer:
+
+        answer = "⚠️ All available AI providers are currently unavailable."
+
+        record_response(
+            time.time() - start,
+            success=False
+        )
+
+        return answer
+
+    cache_save(user_prompt, answer)
+
+    remember("assistant", answer)
+
+    elapsed = round(time.time() - start, 2)
+
+    st.session_state.system_health["response_time"] = elapsed
+
+    update_health()
+
+    record_response(elapsed)
+
+    return answer
