@@ -650,7 +650,7 @@ if detect_project_request(user_prompt):
     answer = plan + "\n\n" + answer
 
 # -------------------------------------------------
-# PROJECT ANALYZER (PART 6)
+# PROJECT ANALYZER
 # -------------------------------------------------
 
 if detect_project_request(user_prompt):
