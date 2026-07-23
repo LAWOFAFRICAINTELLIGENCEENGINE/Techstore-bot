@@ -1246,3 +1246,99 @@ def initialize_schema(self):
     self.create_indexes()
 
     logger.info("Database schema initialized successfully.")
+
+# ======================================================
+# CREATE USER
+# ======================================================
+
+def create_user(
+    self,
+    username,
+    email,
+    password_hash,
+    full_name=None,
+    role="user",
+):
+    """
+    Create a new user.
+    """
+
+    query = """
+    INSERT INTO users
+    (
+        username,
+        email,
+        password_hash,
+        full_name,
+        role
+    )
+    VALUES (?, ?, ?, ?, ?)
+    """
+
+    return self.insert(
+        query,
+        (
+            username,
+            email,
+            password_hash,
+            full_name,
+            role,
+        ),
+    )
+
+
+# ======================================================
+# GET USER BY ID
+# ======================================================
+
+def get_user_by_id(self, user_id):
+    """
+    Return a user by ID.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM users
+        WHERE id = ?
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# GET USER BY USERNAME
+# ======================================================
+
+def get_user_by_username(self, username):
+    """
+    Return a user by username.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM users
+        WHERE username = ?
+        """,
+        (username,),
+    )
+
+
+# ======================================================
+# GET USER BY EMAIL
+# ======================================================
+
+def get_user_by_email(self, email):
+    """
+    Return a user by email.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM users
+        WHERE email = ?
+        """,
+        (email,),
+    )
