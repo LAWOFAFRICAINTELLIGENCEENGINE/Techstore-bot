@@ -264,3 +264,173 @@ DEFAULT_USER_ROLE = "user"
 # ==========================================================
 # END OF SECTION 2
 # ==========================================================
+
+# ==========================================================
+# AI MODEL CONFIGURATION
+# ==========================================================
+
+# Brain 1 (xAI)
+XAI_MODEL = "grok-beta"
+
+# Brain 2 (Google Gemini)
+GEMINI_MODEL = "gemini-1.5-pro"
+
+# Brain 3 (Groq)
+GROQ_MODEL = "llama-3.3-70b-versatile"
+
+
+# ==========================================================
+# AI PROVIDERS
+# ==========================================================
+
+AI_PROVIDERS = {
+    "xai": {
+        "enabled": True,
+        "model": XAI_MODEL,
+        "priority": 1
+    },
+    "gemini": {
+        "enabled": True,
+        "model": GEMINI_MODEL,
+        "priority": 2
+    },
+    "groq": {
+        "enabled": True,
+        "model": GROQ_MODEL,
+        "priority": 3
+    }
+}
+
+
+# ==========================================================
+# 3-BRAIN COLLABORATION SETTINGS
+# ==========================================================
+
+ENABLE_AI_COLLABORATION = True
+
+ENABLE_INTELLIGENT_ROUTING = True
+
+ENABLE_FALLBACK = True
+
+ENABLE_STREAMING = True
+
+ENABLE_RESPONSE_ENHANCER = True
+
+ENABLE_PROJECT_ANALYZER = True
+
+ENABLE_CODE_VALIDATOR = True
+
+ENABLE_SELF_HEALING = True
+
+ENABLE_DIAGNOSTICS = True
+
+
+# ==========================================================
+# ROUTING RULES
+# ==========================================================
+
+AI_ROUTING = {
+
+    "research": "xai",
+
+    "reasoning": "xai",
+
+    "planning": "gemini",
+
+    "documents": "gemini",
+
+    "images": "gemini",
+
+    "coding": "groq",
+
+    "debugging": "groq",
+
+    "projects": "groq",
+
+    "default": "groq"
+
+}
+
+
+# ==========================================================
+# FALLBACK ORDER
+# ==========================================================
+
+FALLBACK_ORDER = [
+
+    "groq",
+
+    "gemini",
+
+    "xai"
+
+]
+
+
+# ==========================================================
+# IMAGE UNDERSTANDING
+# ==========================================================
+
+ENABLE_IMAGE_ANALYSIS = True
+
+SUPPORTED_IMAGE_TYPES = [
+
+    ".png",
+
+    ".jpg",
+
+    ".jpeg",
+
+    ".webp"
+
+]
+
+
+# ==========================================================
+# DOCUMENT ANALYSIS
+# ==========================================================
+
+ENABLE_DOCUMENT_ANALYSIS = True
+
+SUPPORTED_DOCUMENTS = [
+
+    ".pdf",
+
+    ".docx",
+
+    ".xlsx",
+
+    ".csv",
+
+    ".txt"
+
+]
+
+
+# ==========================================================
+# WEB SEARCH
+# ==========================================================
+
+ENABLE_WEB_SEARCH = True
+
+WEB_SEARCH_PROVIDER = "Tavily"
+
+
+# ==========================================================
+# AI RESPONSE SETTINGS
+# ==========================================================
+
+DEFAULT_TEMPERATURE = 0.2
+
+DEFAULT_MAX_TOKENS = 8000
+
+ENABLE_MARKDOWN = True
+
+ENABLE_CODE_BLOCKS = True
+
+ENABLE_RESPONSE_CACHE = True
+
+
+# ==========================================================
+# END OF SECTION 3
+# ==========================================================
