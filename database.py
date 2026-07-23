@@ -631,6 +631,71 @@ def create_users_table(self):
     """)
 
 # ======================================================
+# ROLES TABLE
+# ======================================================
+
+def create_roles_table(self):
+    """
+    Create roles table.
+    """
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS roles (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        role_name TEXT UNIQUE NOT NULL,
+
+        description TEXT,
+
+        permissions TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+# ======================================================
+# CREATE DEFAULT ROLES
+# ======================================================
+
+def create_default_roles(self):
+    """
+    Insert default roles.
+    """
+
+    roles = [
+
+        ("admin", "System Administrator", "all"),
+
+        ("user", "Normal User", "standard"),
+
+        ("moderator", "Moderator", "moderate")
+
+    ]
+
+    for role in roles:
+
+        try:
+
+            self.execute(
+
+                """
+                INSERT OR IGNORE INTO roles
+                (role_name, description, permissions)
+
+                VALUES (?, ?, ?)
+                """,
+
+                role
+
+            )
+
+        except Exception:
+
+            pass
+
+# ======================================================
 # ORDERS TABLE
 # ======================================================
 
