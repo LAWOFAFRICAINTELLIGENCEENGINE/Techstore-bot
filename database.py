@@ -845,3 +845,221 @@ def create_logs_table(self):
 
     )
     """)
+    
+# ======================================================
+# UPLOADED FILES TABLE
+# ======================================================
+
+def create_uploaded_files_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS uploaded_files (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        filename TEXT NOT NULL,
+
+        file_type TEXT,
+
+        file_size INTEGER,
+
+        file_path TEXT,
+
+        uploaded_by TEXT,
+
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# IMAGES TABLE
+# ======================================================
+
+def create_images_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS images (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        filename TEXT,
+
+        path TEXT,
+
+        width INTEGER,
+
+        height INTEGER,
+
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# VIDEOS TABLE
+# ======================================================
+
+def create_videos_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS videos (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        filename TEXT,
+
+        path TEXT,
+
+        duration REAL,
+
+        resolution TEXT,
+
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# VOICE TABLE
+# ======================================================
+
+def create_voice_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS voice (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        filename TEXT,
+
+        path TEXT,
+
+        duration REAL,
+
+        sample_rate INTEGER,
+
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# DOCUMENTS TABLE
+# ======================================================
+
+def create_documents_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS documents (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        filename TEXT,
+
+        document_type TEXT,
+
+        path TEXT,
+
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# HEALTH REPORTS TABLE
+# ======================================================
+
+def create_health_reports_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS health_reports (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        component TEXT,
+
+        status TEXT,
+
+        message TEXT,
+
+        checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# PERFORMANCE REPORTS TABLE
+# ======================================================
+
+def create_performance_reports_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS performance_reports (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        cpu_usage REAL,
+
+        memory_usage REAL,
+
+        disk_usage REAL,
+
+        response_time REAL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# ANALYTICS TABLE
+# ======================================================
+
+def create_analytics_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS analytics (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        metric TEXT,
+
+        value REAL,
+
+        category TEXT,
+
+        recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# BACKUPS TABLE
+# ======================================================
+
+def create_backups_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS backups (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        backup_name TEXT,
+
+        backup_path TEXT,
+
+        backup_size INTEGER,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
