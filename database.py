@@ -542,3 +542,178 @@ def create_tables(self):
     self.create_backups_table()
 
     logger.info("All TechStore database tables created successfully.")
+
+# ======================================================
+# INVENTORY TABLE
+# ======================================================
+
+def create_inventory_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS inventory (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        product_name TEXT NOT NULL,
+
+        sku TEXT UNIQUE,
+
+        category TEXT,
+
+        quantity INTEGER DEFAULT 0,
+
+        price REAL DEFAULT 0,
+
+        supplier TEXT,
+
+        status TEXT DEFAULT 'In Stock',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        updated_at TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# CUSTOMERS TABLE
+# ======================================================
+
+def create_customers_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS customers (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        full_name TEXT NOT NULL,
+
+        email TEXT UNIQUE,
+
+        phone TEXT,
+
+        address TEXT,
+
+        country TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# ORDERS TABLE
+# ======================================================
+
+def create_orders_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS orders (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        customer_id INTEGER,
+
+        total REAL DEFAULT 0,
+
+        status TEXT DEFAULT 'Pending',
+
+        payment_status TEXT DEFAULT 'Unpaid',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY(customer_id)
+        REFERENCES customers(id)
+
+    )
+    """)
+
+
+# ======================================================
+# PRODUCTS TABLE
+# ======================================================
+
+def create_products_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS products (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        product_name TEXT NOT NULL,
+
+        description TEXT,
+
+        category TEXT,
+
+        price REAL,
+
+        stock INTEGER DEFAULT 0,
+
+        barcode TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# SALES TABLE
+# ======================================================
+
+def create_sales_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS sales (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        order_id INTEGER,
+
+        amount REAL,
+
+        payment_method TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY(order_id)
+        REFERENCES orders(id)
+
+    )
+    """)
+
+
+# ======================================================
+# INVOICES TABLE
+# ======================================================
+
+def create_invoices_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS invoices (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        invoice_number TEXT UNIQUE,
+
+        customer_id INTEGER,
+
+        order_id INTEGER,
+
+        amount REAL,
+
+        status TEXT DEFAULT 'Pending',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY(customer_id)
+        REFERENCES customers(id),
+
+        FOREIGN KEY(order_id)
+        REFERENCES orders(id)
+
+    )
+    """)
