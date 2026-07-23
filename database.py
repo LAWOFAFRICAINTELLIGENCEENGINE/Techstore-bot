@@ -469,3 +469,76 @@ def close(self):
     except Exception as e:
 
         logger.exception(e)
+
+# ======================================================
+# CREATE ALL DATABASE TABLES
+# ======================================================
+
+def create_tables(self):
+    """
+    Create every database table required by TechStore.
+    """
+
+    # ==========================
+    # Authentication
+    # ==========================
+
+    self.create_users_table()
+    self.create_roles_table()
+
+    # ==========================
+    # Configuration
+    # ==========================
+
+    self.create_settings_table()
+    self.create_api_keys_table()
+
+    # ==========================
+    # AI
+    # ==========================
+
+    self.create_memory_table()
+    self.create_cache_table()
+    self.create_ai_sessions_table()
+
+    # ==========================
+    # Business
+    # ==========================
+
+    self.create_inventory_table()
+    self.create_customers_table()
+    self.create_orders_table()
+    self.create_products_table()
+    self.create_sales_table()
+    self.create_invoices_table()
+
+    # ==========================
+    # Developer
+    # ==========================
+
+    self.create_projects_table()
+    self.create_plugins_table()
+    self.create_api_usage_table()
+    self.create_diagnostics_table()
+    self.create_logs_table()
+
+    # ==========================
+    # Media
+    # ==========================
+
+    self.create_uploaded_files_table()
+    self.create_images_table()
+    self.create_videos_table()
+    self.create_voice_table()
+    self.create_documents_table()
+
+    # ==========================
+    # Monitoring
+    # ==========================
+
+    self.create_health_reports_table()
+    self.create_performance_reports_table()
+    self.create_analytics_table()
+    self.create_backups_table()
+
+    logger.info("All TechStore database tables created successfully.")
