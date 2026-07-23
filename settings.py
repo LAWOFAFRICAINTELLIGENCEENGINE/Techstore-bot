@@ -988,7 +988,7 @@ PLUGIN_AUTO_LOAD = True
 
 PLUGIN_SANDBOX = True
 
-MAX_PLUGINS = 200
+MAX_PLUGINS = 500
 
 
 # ==========================================================
@@ -999,7 +999,7 @@ ENABLE_BACKUPS = True
 
 BACKUP_INTERVAL_HOURS = 24
 
-MAX_BACKUP_FILES = 50
+MAX_BACKUP_FILES = 100
 
 COMPRESS_BACKUPS = True
 
@@ -1030,4 +1030,112 @@ TRACK_PROVIDER_USAGE = True
 
 # ==========================================================
 # END OF SECTION 7
+# ==========================================================
+
+# ==========================================================
+# LOGGING CONFIGURATION
+# ==========================================================
+
+LOGGING = {
+    "enabled": True,
+    "level": "INFO",          # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    "log_to_file": True,
+    "log_to_console": True,
+    "max_log_size_mb": 10,
+    "backup_count": 5,
+    "log_format": "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+}
+
+
+# ==========================================================
+# VALIDATION
+# ==========================================================
+
+REQUIRED_API_KEYS = [
+    "XAI_API_KEY",
+    "GEMINI_API_KEY",
+    "GROQ_API_KEY"
+]
+
+
+def validate_configuration():
+    """
+    Validate the application configuration.
+
+    Returns:
+        tuple(bool, list): (success, errors)
+    """
+    errors = []
+
+    if not APP_NAME:
+        errors.append("APP_NAME is missing.")
+
+    if DATABASE_ENGINE not in ["sqlite", "postgresql"]:
+        errors.append("DATABASE_ENGINE must be 'sqlite' or 'postgresql'.")
+
+    if CACHE_MAX_SIZE <= 0:
+        errors.append("CACHE_MAX_SIZE must be greater than zero.")
+
+    return len(errors) == 0, errors
+
+
+# ==========================================================
+# HELPER FUNCTIONS
+# ==========================================================
+
+def is_feature_enabled(feature_name: str) -> bool:
+    """
+    Check whether a feature flag is enabled.
+    """
+    return FEATURE_FLAGS.get(feature_name, False)
+
+
+def get_database_path():
+    """
+    Return the configured SQLite database path.
+    """
+    return str(SQLITE_DATABASE)
+
+
+def get_upload_directory():
+    """
+    Return the uploads directory.
+    """
+    return str(UPLOAD_DIRECTORY)
+
+
+def get_media_directory():
+    """
+    Return the media directory.
+    """
+    return str(MEDIA_DIRECTORY)
+
+
+def get_plugin_directory():
+    """
+    Return the plugins directory.
+    """
+    return str(PLUGIN_DIRECTORY)
+
+
+# ==========================================================
+# CONFIGURATION SUMMARY
+# ==========================================================
+
+CONFIG = {
+    "app_name": APP_NAME,
+    "version": APP_VERSION,
+    "build": APP_BUILD,
+    "database_engine": DATABASE_ENGINE,
+    "default_ai_model": GROQ_MODEL,
+    "streaming_enabled": ENABLE_STREAMING,
+    "cache_enabled": ENABLE_CACHE,
+    "memory_enabled": ENABLE_MEMORY,
+    "plugins_enabled": ENABLE_PLUGINS,
+    "authentication_enabled": FEATURE_FLAGS["authentication"]
+}
+
+
+# ==========================================================
+# END OF settings.py
 # ==========================================================
