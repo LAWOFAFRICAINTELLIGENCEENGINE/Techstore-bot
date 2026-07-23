@@ -545,6 +545,9 @@ def create_tables(self):
     # Database Version
     self.create_migrations_table()
 
+   # Default Settings
+    self.initialize_default_settings()
+
 
     logger.info("All TechStore database tables created successfully.")
 
