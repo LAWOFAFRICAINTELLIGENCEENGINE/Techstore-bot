@@ -151,3 +151,116 @@ MAX_MEMORY_RECORDS = 5000
 # ==========================================================
 # END OF SECTION 1
 # ==========================================================
+
+# ==========================================================
+# ENVIRONMENT & SECRETS
+# ==========================================================
+
+# Environment Name
+ENVIRONMENT = os.getenv("APP_ENV", "development")
+
+# Security
+SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_THIS_SECRET_KEY")
+
+ENABLE_STREAMLIT_SECRETS = st is not None
+
+# ==========================================================
+# API KEY LOADER
+# ==========================================================
+
+def get_secret(key: str, default: str = "") -> str:
+    """
+    Load configuration securely.
+
+    Priority:
+    1. Streamlit Secrets
+    2. Environment Variables
+    3. Default Value
+    """
+
+    if ENABLE_STREAMLIT_SECRETS:
+        try:
+            return st.secrets[key]
+        except Exception:
+            pass
+
+    return os.getenv(key, default)
+
+
+# ==========================================================
+# AI PROVIDER API KEYS
+# ==========================================================
+
+XAI_API_KEY = get_secret("XAI_API_KEY")
+
+GEMINI_API_KEY = get_secret("GEMINI_API_KEY")
+
+GROQ_API_KEY = get_secret("GROQ_API_KEY")
+
+OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
+
+CLAUDE_API_KEY = get_secret("CLAUDE_API_KEY")
+
+DEEPSEEK_API_KEY = get_secret("DEEPSEEK_API_KEY")
+
+MISTRAL_API_KEY = get_secret("MISTRAL_API_KEY")
+
+ELEVENLABS_API_KEY = get_secret("ELEVENLABS_API_KEY")
+
+TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
+
+FACE_SWAP_API_KEY = get_secret("FACE_SWAP_API_KEY")
+
+VOICE_CLONE_API_KEY = get_secret("VOICE_CLONE_API_KEY")
+
+VIDEO_GENERATOR_API_KEY = get_secret("VIDEO_GENERATOR_API_KEY")
+
+
+# ==========================================================
+# SECURITY CONFIGURATION
+# ==========================================================
+
+PASSWORD_HASH_ALGORITHM = "bcrypt"
+
+MAX_LOGIN_ATTEMPTS = 5
+
+ACCOUNT_LOCKOUT_MINUTES = 30
+
+SESSION_COOKIE_NAME = "techstore_session"
+
+SESSION_SECURE = True
+
+SESSION_HTTPONLY = True
+
+SESSION_SAMESITE = "Lax"
+
+ENABLE_CSRF_PROTECTION = True
+
+
+# ==========================================================
+# RATE LIMITING
+# ==========================================================
+
+RATE_LIMIT_ENABLED = True
+
+MAX_REQUESTS_PER_MINUTE = 60
+
+MAX_AI_REQUESTS_PER_HOUR = 500
+
+MAX_FILE_UPLOADS_PER_HOUR = 100
+
+
+# ==========================================================
+# USER SESSION
+# ==========================================================
+
+AUTO_LOGOUT_MINUTES = 120
+
+REMEMBER_LOGIN_DAYS = 30
+
+DEFAULT_USER_ROLE = "user"
+
+
+# ==========================================================
+# END OF SECTION 2
+# ==========================================================
