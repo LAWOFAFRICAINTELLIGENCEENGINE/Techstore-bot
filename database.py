@@ -128,3 +128,124 @@ db = DatabaseManager()
 # ==========================================================
 # END OF SECTION 1
 # ==========================================================
+
+# ======================================================
+# CONNECTION HEALTH
+# ======================================================
+
+def reconnect(self):
+    """
+    Reconnect to the database if the connection is lost.
+    """
+
+    try:
+        if self.connection:
+            self.connection.close()
+    except Exception:
+        pass
+
+    self._initialize_sqlite()
+
+
+# ======================================================
+# QUERY EXECUTION
+# ======================================================
+
+def execute(self, query, parameters=None):
+
+    if parameters is None:
+        parameters = ()
+
+    with self.lock:
+
+        try:
+
+            cursor = self.connection.cursor()
+
+            cursor.execute(query, parameters)
+
+            self.connection.commit()
+
+            return cursor
+
+        except Exception as e:
+
+            logger.exception("Database execute error")
+
+            self.connection.rollback()
+
+            raise e
+
+
+# ======================================================
+# FETCH ONE
+# ======================================================
+
+def fetch_one(self, query, parameters=None):
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.fetchone()
+
+
+# ======================================================
+# FETCH ALL
+# ======================================================
+
+def fetch_all(self, query, parameters=None):
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.fetchall()
+
+
+# ======================================================
+# TRANSACTION
+# ======================================================
+
+@contextmanager
+def transaction(self):
+
+    with self.lock:
+
+        try:
+
+            yield self.connection
+
+            self.connection.commit()
+
+        except Exception:
+
+            self.connection.rollback()
+
+            raise
+
+
+# ======================================================
+# DATABASE HEALTH
+# ======================================================
+
+def ping(self):
+
+    try:
+
+        self.connection.execute("SELECT 1")
+
+        return True
+
+    except Exception:
+
+        return False
+
+
+# ======================================================
+# CLOSE DATABASE
+# ======================================================
+
+def close(self):
+
+    if self.connection:
+
+        self.connection.close()
+
+        logger.info("Database connection closed.")
