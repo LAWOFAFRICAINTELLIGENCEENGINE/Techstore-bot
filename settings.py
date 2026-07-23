@@ -1137,5 +1137,81 @@ CONFIG = {
 
 
 # ==========================================================
-# END OF settings.py
+# END OF section 8
 # ==========================================================
+
+# ==========================================================
+# ENUMS & CONSTANTS
+# ==========================================================
+
+from enum import Enum
+
+
+class DatabaseEngine(Enum):
+    SQLITE = "sqlite"
+    POSTGRESQL = "postgresql"
+
+
+class UserRole(Enum):
+    ADMIN = "admin"
+    MANAGER = "manager"
+    STAFF = "staff"
+    USER = "user"
+    GUEST = "guest"
+
+
+class AIProvider(Enum):
+    XAI = "xai"
+    GEMINI = "gemini"
+    GROQ = "groq"
+
+
+class LogLevel(Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
+class Theme(Enum):
+    LIGHT = "light"
+    DARK = "dark"
+    SYSTEM = "system"
+
+
+class UploadType(Enum):
+    IMAGE = "image"
+    DOCUMENT = "document"
+    AUDIO = "audio"
+    VIDEO = "video"
+
+
+# ==========================================================
+# APPLICATION CONSTANTS
+# ==========================================================
+
+DEFAULT_THEME = Theme.SYSTEM.value
+
+DEFAULT_ROLE = UserRole.USER.value
+
+DEFAULT_DATABASE = DatabaseEngine.SQLITE.value
+
+DEFAULT_AI_PROVIDER = AIProvider.GROQ.value
+
+DEFAULT_LOG_LEVEL = LogLevel.INFO.value
+
+
+# ==========================================================
+# VERSION INFORMATION
+# ==========================================================
+
+SYSTEM_NAME = APP_NAME
+
+SYSTEM_VERSION = APP_VERSION
+
+SYSTEM_BUILD = APP_BUILD
+
+SYSTEM_AUTHOR = AUTHOR
+
+SYSTEM_COMPANY = COMPANY
