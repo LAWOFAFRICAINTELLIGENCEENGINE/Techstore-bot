@@ -25,6 +25,13 @@ import logging
 from pathlib import Path
 from contextlib import contextmanager
 
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+    RealDictCursor = None
+
 from settings import (
     DATABASE_ENGINE,
     SQLITE_DATABASE,
