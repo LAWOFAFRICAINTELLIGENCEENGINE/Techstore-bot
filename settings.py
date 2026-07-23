@@ -434,3 +434,106 @@ ENABLE_RESPONSE_CACHE = True
 # ==========================================================
 # END OF SECTION 3
 # ==========================================================
+
+# ==========================================================
+# DATABASE CONFIGURATION
+# ==========================================================
+
+# Default database engine
+DATABASE_ENGINE = "sqlite"      # Options: sqlite, postgresql
+
+# SQLite database file
+SQLITE_DATABASE = DATABASE_FILE
+
+# PostgreSQL Configuration
+POSTGRES_HOST = get_secret("POSTGRES_HOST", "localhost")
+
+POSTGRES_PORT = int(get_secret("POSTGRES_PORT", "5432"))
+
+POSTGRES_DATABASE = get_secret("POSTGRES_DATABASE", "techstore")
+
+POSTGRES_USER = get_secret("POSTGRES_USER", "postgres")
+
+POSTGRES_PASSWORD = get_secret("POSTGRES_PASSWORD", "")
+
+# Connection Pool
+DATABASE_POOL_SIZE = 10
+
+DATABASE_TIMEOUT = 30
+
+ENABLE_DATABASE_POOLING = True
+
+AUTO_CREATE_DATABASE = True
+
+
+# ==========================================================
+# DATABASE TABLES
+# ==========================================================
+
+DATABASE_TABLES = [
+
+    "users",
+
+    "roles",
+
+    "customers",
+
+    "orders",
+
+    "inventory",
+
+    "chat_history",
+
+    "conversation_memory",
+
+    "response_cache",
+
+    "system_logs",
+
+    "performance_logs",
+
+    "api_usage",
+
+    "plugins"
+
+]
+
+
+# ==========================================================
+# DATABASE BACKUP
+# ==========================================================
+
+ENABLE_DATABASE_BACKUP = True
+
+DATABASE_BACKUP_DIRECTORY = BACKUPS_DIR
+
+DATABASE_BACKUP_INTERVAL_HOURS = 24
+
+MAX_DATABASE_BACKUPS = 30
+
+
+# ==========================================================
+# DATABASE SECURITY
+# ==========================================================
+
+ENABLE_DATABASE_ENCRYPTION = False
+
+ENABLE_FOREIGN_KEYS = True
+
+ENABLE_WAL_MODE = True
+
+ENABLE_DATABASE_INDEXING = True
+
+
+# ==========================================================
+# DATABASE MIGRATIONS
+# ==========================================================
+
+ENABLE_AUTO_MIGRATION = True
+
+DATABASE_SCHEMA_VERSION = "1.0.0"
+
+
+# ==========================================================
+# END OF SECTION 4
+# ==========================================================
