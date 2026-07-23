@@ -1342,3 +1342,143 @@ def get_user_by_email(self, email):
         """,
         (email,),
     )
+
+# ======================================================
+# CREATE ROLE
+# ======================================================
+
+def create_role(self, role_name, description="", permissions=""):
+    """
+    Create a new role.
+    """
+
+    query = """
+    INSERT INTO roles
+    (role_name, description, permissions)
+    VALUES (?, ?, ?)
+    """
+
+    return self.insert(
+        query,
+        (
+            role_name,
+            description,
+            permissions,
+        ),
+    )
+
+
+# ======================================================
+# GET ROLE BY ID
+# ======================================================
+
+def get_role_by_id(self, role_id):
+    """
+    Return one role by ID.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM roles
+        WHERE id = ?
+        """,
+        (role_id,),
+    )
+
+
+# ======================================================
+# GET ROLE BY NAME
+# ======================================================
+
+def get_role_by_name(self, role_name):
+    """
+    Return one role by name.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM roles
+        WHERE role_name = ?
+        """,
+        (role_name,),
+    )
+
+
+# ======================================================
+# GET ALL ROLES
+# ======================================================
+
+def get_all_roles(self):
+    """
+    Return all roles.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM roles
+        ORDER BY role_name
+        """
+    )
+
+
+# ======================================================
+# UPDATE ROLE
+# ======================================================
+
+def update_role(
+    self,
+    role_id,
+    description,
+    permissions,
+):
+    """
+    Update role information.
+    """
+
+    return self.update(
+        """
+        UPDATE roles
+        SET
+            description = ?,
+            permissions = ?
+        WHERE id = ?
+        """,
+        (
+            description,
+            permissions,
+            role_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE ROLE
+# ======================================================
+
+def delete_role(self, role_id):
+    """
+    Delete a role.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM roles
+        WHERE id = ?
+        """,
+        (role_id,),
+    )
+
+
+# ======================================================
+# ROLE EXISTS
+# ======================================================
+
+def role_exists(self, role_name):
+    """
+    Check whether a role exists.
+    """
+
+    return self.get_role_by_name(role_name) is not None
