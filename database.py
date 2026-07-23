@@ -1482,3 +1482,185 @@ def role_exists(self, role_name):
     """
 
     return self.get_role_by_name(role_name) is not None
+
+# ======================================================
+# CREATE SETTING
+# ======================================================
+
+def create_setting(self, setting_key, setting_value):
+    """
+    Create a new application setting.
+    """
+
+    return self.insert(
+        """
+        INSERT OR REPLACE INTO settings
+        (setting_key, setting_value)
+        VALUES (?, ?)
+        """,
+        (
+            setting_key,
+            setting_value,
+        ),
+    )
+
+
+# ======================================================
+# GET SETTING
+# ======================================================
+
+def get_setting(self, setting_key):
+    """
+    Return one setting.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM settings
+        WHERE setting_key = ?
+        """,
+        (setting_key,),
+    )
+
+
+# ======================================================
+# GET SETTING VALUE
+# ======================================================
+
+def get_setting_value(self, setting_key, default=None):
+    """
+    Return only the setting value.
+    """
+
+    row = self.get_setting(setting_key)
+
+    if row is None:
+        return default
+
+    return row["setting_value"]
+
+
+# ======================================================
+# GET ALL SETTINGS
+# ======================================================
+
+def get_all_settings(self):
+    """
+    Return every application setting.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM settings
+        ORDER BY setting_key
+        """
+    )
+
+
+# ======================================================
+# UPDATE SETTING
+# ======================================================
+
+def update_setting(self, setting_key, setting_value):
+    """
+    Update one setting.
+    """
+
+    return self.update(
+        """
+        UPDATE settings
+        SET setting_value = ?
+        WHERE setting_key = ?
+        """,
+        (
+            setting_value,
+            setting_key,
+        ),
+    )
+
+
+# ======================================================
+# DELETE SETTING
+# ======================================================
+
+def delete_setting(self, setting_key):
+    """
+    Delete one setting.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM settings
+        WHERE setting_key = ?
+        """,
+        (setting_key,),
+    )
+
+
+# ======================================================
+# SETTING EXISTS
+# ======================================================
+
+def setting_exists(self, setting_key):
+    """
+    Check whether a setting exists.
+    """
+
+    return self.get_setting(setting_key) is not None
+
+# ======================================================
+# INITIALIZE DEFAULT SETTINGS
+# ======================================================
+
+def initialize_default_settings(self):
+    """
+    Create default application settings.
+    """
+
+    defaults = {
+
+        "theme": "dark",
+
+        "language": "en",
+
+        "default_ai": "auto",
+
+        "streaming": "true",
+
+        "voice_enabled": "true",
+
+        "video_enabled": "true",
+
+        "face_swap_enabled": "true",
+
+        "voice_clone_enabled": "true",
+
+        "background_removal": "true",
+
+        "video_generation": "true",
+
+        "plugins_enabled": "true",
+
+        "cache_enabled": "true",
+
+        "memory_enabled": "true",
+
+        "health_monitor": "true",
+
+        "performance_monitor": "true",
+
+        "auto_update": "true",
+
+        "backup_enabled": "true",
+
+        "developer_mode": "false",
+
+    }
+
+    for key, value in defaults.items():
+
+        if not self.setting_exists(key):
+
+            self.create_setting(key, value)
