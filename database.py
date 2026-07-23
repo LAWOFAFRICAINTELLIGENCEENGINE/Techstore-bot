@@ -132,6 +132,27 @@ else:
 # GLOBAL DATABASE INSTANCE
 # ==========================================================
 
+
+DatabaseManager
+
+├── __init__
+├── initialize
+├── _initialize_sqlite
+├── get_connection
+├── reconnect
+├── execute
+├── fetch_one
+├── fetch_all
+├── transaction
+├── ping
+├── close
+│
+├── ✅ _initialize_postgresql
+├── ✅ get_database_engine
+├── ✅ database_information
+├── ✅ is_connected
+└── ✅ database_version
+
 db = DatabaseManager()
 
 
