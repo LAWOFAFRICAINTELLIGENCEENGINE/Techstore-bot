@@ -667,3 +667,187 @@ SELF_HEALING_INTERVAL_MINUTES = 10
 # ==========================================================
 # END OF SECTION 5
 # ==========================================================
+
+# ==========================================================
+# FILE UPLOAD CONFIGURATION
+# ==========================================================
+
+ENABLE_FILE_UPLOADS = True
+
+UPLOAD_DIRECTORY = UPLOADS_DIR
+
+MAX_UPLOAD_SIZE_MB = 500
+
+ALLOW_MULTIPLE_UPLOADS = True
+
+ALLOWED_FILE_TYPES = [
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".txt",
+    ".csv",
+    ".xlsx",
+    ".xls",
+    ".ppt",
+    ".pptx",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".gif",
+    ".bmp",
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".m4a",
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".webm"
+]
+
+
+# ==========================================================
+# IMAGE CONFIGURATION
+# ==========================================================
+
+ENABLE_IMAGE_PROCESSING = True
+
+ENABLE_IMAGE_ANALYSIS = True
+
+ENABLE_IMAGE_PREVIEW = True
+
+ENABLE_IMAGE_RESIZE = True
+
+MAX_IMAGE_WIDTH = 4096
+
+MAX_IMAGE_HEIGHT = 4096
+
+
+# ==========================================================
+# DOCUMENT CONFIGURATION
+# ==========================================================
+
+ENABLE_DOCUMENT_PARSER = True
+
+ENABLE_PDF_ANALYSIS = True
+
+ENABLE_WORD_ANALYSIS = True
+
+ENABLE_EXCEL_ANALYSIS = True
+
+ENABLE_CSV_ANALYSIS = True
+
+ENABLE_TEXT_ANALYSIS = True
+
+
+# ==========================================================
+# AUDIO CONFIGURATION
+# ==========================================================
+
+ENABLE_AUDIO_UPLOAD = True
+
+ENABLE_VOICE_INPUT = True
+
+ENABLE_VOICE_OUTPUT = True
+
+ENABLE_AUDIO_TRANSCRIPTION = True
+
+ENABLE_SPEECH_SYNTHESIS = True
+
+SUPPORTED_AUDIO_FORMATS = [
+
+    ".mp3",
+
+    ".wav",
+
+    ".ogg",
+
+    ".m4a"
+
+]
+
+
+# ==========================================================
+# VIDEO CONFIGURATION
+# ==========================================================
+
+ENABLE_VIDEO_UPLOAD = True
+
+ENABLE_VIDEO_PROCESSING = True
+
+ENABLE_VIDEO_ANALYSIS = True
+
+ENABLE_VIDEO_PREVIEW = True
+
+ENABLE_WEBCAM = True
+
+SUPPORTED_VIDEO_FORMATS = [
+
+    ".mp4",
+
+    ".avi",
+
+    ".mov",
+
+    ".mkv",
+
+    ".webm"
+
+]
+
+
+# ==========================================================
+# ADVANCED AI MEDIA FEATURES
+# ==========================================================
+
+ENABLE_BACKGROUND_REMOVAL = True
+
+ENABLE_BACKGROUND_REPLACEMENT = True
+
+ENABLE_FACE_SWAP = True
+
+ENABLE_VOICE_CLONE = True
+
+ENABLE_VIDEO_GENERATOR = True
+
+ENABLE_IMAGE_GENERATOR = True
+
+
+# ==========================================================
+# MEDIA STORAGE
+# ==========================================================
+
+MEDIA_DIRECTORY = ASSETS_DIR / "media"
+
+IMAGE_DIRECTORY = MEDIA_DIRECTORY / "images"
+
+VIDEO_DIRECTORY = MEDIA_DIRECTORY / "videos"
+
+AUDIO_DIRECTORY = MEDIA_DIRECTORY / "audio"
+
+GENERATED_DIRECTORY = MEDIA_DIRECTORY / "generated"
+
+
+MEDIA_DIRECTORIES = [
+
+    MEDIA_DIRECTORY,
+
+    IMAGE_DIRECTORY,
+
+    VIDEO_DIRECTORY,
+
+    AUDIO_DIRECTORY,
+
+    GENERATED_DIRECTORY
+
+]
+
+for folder in MEDIA_DIRECTORIES:
+    folder.mkdir(parents=True, exist_ok=True)
+
+
+# ==========================================================
+# END OF SECTION 6
+# ==========================================================
