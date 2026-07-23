@@ -84,7 +84,8 @@ else:
     raise ValueError(
         f"Unsupported database engine: {self.database_engine}"
     )
-
+# Automatically create database schema
+    self.initialize_schema()
 
     # ======================================================
     # SQLITE INITIALIZATION
@@ -540,6 +541,10 @@ def create_tables(self):
     self.create_performance_reports_table()
     self.create_analytics_table()
     self.create_backups_table()
+
+    # Database Version
+    self.create_migrations_table()
+
 
     logger.info("All TechStore database tables created successfully.")
 
