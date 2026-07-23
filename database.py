@@ -249,3 +249,213 @@ def close(self):
         self.connection.close()
 
         logger.info("Database connection closed.")
+
+
+# ======================================================
+# RECONNECT DATABASE
+# ======================================================
+
+def reconnect(self):
+    """
+    Reconnect to the database.
+    """
+
+    logger.warning("Reconnecting database...")
+
+    try:
+        if self.connection:
+            self.connection.close()
+    except Exception:
+        pass
+
+    self.initialize()
+
+
+# ======================================================
+# EXECUTE QUERY
+# ======================================================
+
+def execute(self, query, parameters=None):
+    """
+    Execute INSERT, UPDATE or DELETE query.
+    """
+
+    if parameters is None:
+        parameters = ()
+
+    with self.lock:
+
+        try:
+
+            cursor = self.connection.cursor()
+
+            cursor.execute(query, parameters)
+
+            self.connection.commit()
+
+            return cursor
+
+        except Exception as e:
+
+            logger.exception("Database execution failed.")
+
+            self.connection.rollback()
+
+            raise e
+
+
+# ======================================================
+# FETCH ONE
+# ======================================================
+
+def fetch_one(self, query, parameters=None):
+    """
+    Return one record.
+    """
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.fetchone()
+
+
+# ======================================================
+# FETCH ALL
+# ======================================================
+
+def fetch_all(self, query, parameters=None):
+    """
+    Return multiple records.
+    """
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.fetchall()
+
+
+# ======================================================
+# INSERT
+# ======================================================
+
+def insert(self, query, parameters=None):
+    """
+    Execute INSERT query.
+    """
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.lastrowid
+
+
+# ======================================================
+# UPDATE
+# ======================================================
+
+def update(self, query, parameters=None):
+    """
+    Execute UPDATE query.
+    """
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.rowcount
+
+
+# ======================================================
+# DELETE
+# ======================================================
+
+def delete(self, query, parameters=None):
+    """
+    Execute DELETE query.
+    """
+
+    cursor = self.execute(query, parameters)
+
+    return cursor.rowcount
+
+
+# ======================================================
+# TRANSACTION
+# ======================================================
+
+@contextmanager
+def transaction(self):
+    """
+    Execute multiple SQL operations safely.
+    """
+
+    with self.lock:
+
+        try:
+
+            yield self.connection
+
+            self.connection.commit()
+
+        except Exception:
+
+            self.connection.rollback()
+
+            raise
+
+
+# ======================================================
+# DATABASE HEALTH CHECK
+# ======================================================
+
+def ping(self):
+    """
+    Check database connection.
+    """
+
+    try:
+
+        self.connection.execute("SELECT 1")
+
+        return True
+
+    except Exception:
+
+        return False
+
+
+# ======================================================
+# DATABASE INFORMATION
+# ======================================================
+
+def database_information(self):
+    """
+    Return database information.
+    """
+
+    return {
+
+        "engine": self.database_engine,
+
+        "database": str(self.database_path),
+
+        "connected": self.ping()
+
+    }
+
+
+# ======================================================
+# CLOSE DATABASE
+# ======================================================
+
+def close(self):
+    """
+    Close database connection.
+    """
+
+    try:
+
+        if self.connection:
+
+            self.connection.close()
+
+            logger.info("Database connection closed.")
+
+    except Exception as e:
+
+        logger.exception(e)
