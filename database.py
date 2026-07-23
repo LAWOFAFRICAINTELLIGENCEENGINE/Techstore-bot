@@ -582,31 +582,53 @@ def create_inventory_table(self):
 
 
 # ======================================================
-# CUSTOMERS TABLE
+# USERS TABLE
 # ======================================================
 
-def create_customers_table(self):
+def create_users_table(self):
+    """
+    Create the users table.
+    """
 
     self.execute("""
-    CREATE TABLE IF NOT EXISTS customers (
+    CREATE TABLE IF NOT EXISTS users (
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        full_name TEXT NOT NULL,
+        username TEXT UNIQUE NOT NULL,
 
-        email TEXT UNIQUE,
+        email TEXT UNIQUE NOT NULL,
+
+        password_hash TEXT NOT NULL,
+
+        full_name TEXT,
+
+        profile_image TEXT,
 
         phone TEXT,
 
-        address TEXT,
-
         country TEXT,
 
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        role TEXT DEFAULT 'user',
+
+        is_active INTEGER DEFAULT 1,
+
+        is_verified INTEGER DEFAULT 0,
+
+        failed_login_attempts INTEGER DEFAULT 0,
+
+        locked_until TIMESTAMP,
+
+        last_login TIMESTAMP,
+
+        password_changed_at TIMESTAMP,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        updated_at TIMESTAMP
 
     )
     """)
-
 
 # ======================================================
 # ORDERS TABLE
