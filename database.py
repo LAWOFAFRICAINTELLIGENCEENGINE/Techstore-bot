@@ -77,9 +77,12 @@ class DatabaseManager:
         if self.database_engine == "sqlite":
     self._initialize_sqlite()
 
+elif self.database_engine == "postgresql":
+    self._initialize_postgresql()
+
 else:
-    raise NotImplementedError(
-        "PostgreSQL initialization will be added in Section 3."
+    raise ValueError(
+        f"Unsupported database engine: {self.database_engine}"
     )
 
 
