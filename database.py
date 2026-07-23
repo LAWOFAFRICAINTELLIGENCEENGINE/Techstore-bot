@@ -1063,3 +1063,94 @@ def create_backups_table(self):
 
     )
     """)
+
+# ======================================================
+# DATABASE MIGRATIONS
+# ======================================================
+
+def create_migrations_table(self):
+    """
+    Store schema versions for future upgrades.
+    """
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        version TEXT UNIQUE NOT NULL,
+
+        description TEXT,
+
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# DATABASE INDEXES
+# ======================================================
+
+def create_indexes(self):
+    """
+    Create indexes for better performance.
+    """
+
+    indexes = [
+
+        "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);",
+
+        "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);",
+
+        "CREATE INDEX IF NOT EXISTS idx_inventory_sku ON inventory(sku);",
+
+        "CREATE INDEX IF NOT EXISTS idx_products_name ON products(product_name);",
+
+        "CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);",
+
+        "CREATE INDEX IF NOT EXISTS idx_sales_order_id ON sales(order_id);",
+
+        "CREATE INDEX IF NOT EXISTS idx_memory_session ON conversation_memory(session_id);",
+
+        "CREATE INDEX IF NOT EXISTS idx_cache_hash ON response_cache(prompt_hash);"
+
+    ]
+
+    for sql in indexes:
+
+        self.execute(sql)
+
+
+# ======================================================
+# ENABLE FOREIGN KEYS
+# ======================================================
+
+def enable_foreign_keys(self):
+    """
+    Enable SQLite foreign key enforcement.
+    """
+
+    if self.database_engine == "sqlite":
+
+        self.execute("PRAGMA foreign_keys = ON;")
+
+
+# ======================================================
+# INITIALIZE DATABASE STRUCTURE
+# ======================================================
+
+def initialize_schema(self):
+    """
+    Create every database object.
+    """
+
+    self.enable_foreign_keys()
+
+    self.create_tables()
+
+    self.create_migrations_table()
+
+    self.create_indexes()
+
+    logger.info("Database schema initialized successfully.")
