@@ -1667,3 +1667,196 @@ def initialize_default_settings(self):
         if not self.setting_exists(key):
 
             self.create_setting(key, value)
+
+# ======================================================
+# CREATE API KEY
+# ======================================================
+
+def create_api_key(
+    self,
+    provider,
+    api_key,
+    description="",
+    active=True,
+):
+    """
+    Store an API key.
+    """
+
+    return self.insert(
+        """
+        INSERT OR REPLACE INTO api_keys
+        (
+            provider,
+            api_key,
+            description,
+            active
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            provider,
+            api_key,
+            description,
+            int(active),
+        ),
+    )
+
+
+# ======================================================
+# GET API KEY
+# ======================================================
+
+def get_api_key(self, provider):
+    """
+    Return one API key.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM api_keys
+        WHERE provider = ?
+        """,
+        (provider,),
+    )
+
+
+# ======================================================
+# GET API KEY VALUE
+# ======================================================
+
+def get_api_key_value(self, provider):
+    """
+    Return only the key.
+    """
+
+    row = self.get_api_key(provider)
+
+    if row:
+
+        return row["api_key"]
+
+    return None
+
+
+# ======================================================
+# GET ALL API KEYS
+# ======================================================
+
+def get_all_api_keys(self):
+    """
+    Return all API keys.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM api_keys
+        ORDER BY provider
+        """
+    )
+
+
+# ======================================================
+# UPDATE API KEY
+# ======================================================
+
+def update_api_key(
+    self,
+    provider,
+    api_key,
+):
+    """
+    Update API key.
+    """
+
+    return self.update(
+        """
+        UPDATE api_keys
+        SET api_key = ?
+        WHERE provider = ?
+        """,
+        (
+            api_key,
+            provider,
+        ),
+    )
+
+
+# ======================================================
+# DELETE API KEY
+# ======================================================
+
+def delete_api_key(self, provider):
+    """
+    Delete one API key.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM api_keys
+        WHERE provider = ?
+        """,
+        (provider,),
+    )
+
+
+# ======================================================
+# API KEY EXISTS
+# ======================================================
+
+def api_key_exists(self, provider):
+    """
+    Check whether an API key exists.
+    """
+
+    return self.get_api_key(provider) is not None
+
+# ======================================================
+# INITIALIZE DEFAULT API PROVIDERS
+# ======================================================
+
+def initialize_default_api_keys(self):
+    """
+    Register supported providers.
+    """
+
+    providers = [
+
+        "xai",
+
+        "gemini",
+
+        "groq",
+
+        "openai",
+
+        "anthropic",
+
+        "deepseek",
+
+        "stability",
+
+        "elevenlabs",
+
+        "tavily",
+
+        "video_generation",
+
+        "face_swap",
+
+        "voice_clone",
+
+    ]
+
+    for provider in providers:
+
+        if not self.api_key_exists(provider):
+
+            self.create_api_key(
+                provider,
+                "",
+                "Not configured",
+                False,
+            )
