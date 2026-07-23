@@ -548,6 +548,9 @@ def create_tables(self):
    # Default Settings
     self.initialize_default_settings()
 
+    # Default Settings
+    self.initialize_default_api_keys()
+
 
     logger.info("All TechStore database tables created successfully.")
 
