@@ -717,3 +717,131 @@ def create_invoices_table(self):
 
     )
     """)
+
+# ======================================================
+# PROJECTS TABLE
+# ======================================================
+
+def create_projects_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS projects (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        project_name TEXT NOT NULL,
+
+        description TEXT,
+
+        owner TEXT,
+
+        status TEXT DEFAULT 'Active',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        updated_at TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# PLUGINS TABLE
+# ======================================================
+
+def create_plugins_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS plugins (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        plugin_name TEXT UNIQUE NOT NULL,
+
+        version TEXT,
+
+        author TEXT,
+
+        enabled INTEGER DEFAULT 1,
+
+        installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# API USAGE TABLE
+# ======================================================
+
+def create_api_usage_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS api_usage (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        provider TEXT NOT NULL,
+
+        model TEXT,
+
+        endpoint TEXT,
+
+        tokens_used INTEGER DEFAULT 0,
+
+        request_time REAL DEFAULT 0,
+
+        cost REAL DEFAULT 0,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# DIAGNOSTICS TABLE
+# ======================================================
+
+def create_diagnostics_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS diagnostics (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        component TEXT,
+
+        severity TEXT,
+
+        message TEXT,
+
+        resolved INTEGER DEFAULT 0,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+# ======================================================
+# SYSTEM LOGS TABLE
+# ======================================================
+
+def create_logs_table(self):
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS logs (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        level TEXT,
+
+        module TEXT,
+
+        message TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
