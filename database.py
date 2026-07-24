@@ -1863,3 +1863,200 @@ def initialize_default_api_keys(self):
                 "Not configured",
                 False,
             )
+
+# ======================================================
+# CREATE MEMORY
+# ======================================================
+
+def create_memory(
+    self,
+    user_id,
+    memory_type,
+    title,
+    content,
+):
+    """
+    Save a memory.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO conversation_memory
+        (
+            user_id,
+            memory_type,
+            title,
+            content
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            memory_type,
+            title,
+            content,
+        ),
+    )
+
+
+# ======================================================
+# GET MEMORY
+# ======================================================
+
+def get_memory(self, memory_id):
+    """
+    Return one memory.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM conversation_memory
+        WHERE id = ?
+        """,
+        (memory_id,),
+    )
+
+
+# ======================================================
+# GET USER MEMORIES
+# ======================================================
+
+def get_user_memories(self, user_id):
+    """
+    Return all memories for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM conversation_memory
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SEARCH MEMORY
+# ======================================================
+
+def search_memory(self, keyword):
+    """
+    Search memories.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM conversation_memory
+        WHERE
+            title LIKE ?
+            OR content LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (
+            f"%{keyword}%",
+            f"%{keyword}%",
+        ),
+    )
+
+
+# ======================================================
+# UPDATE MEMORY
+# ======================================================
+
+def update_memory(
+    self,
+    memory_id,
+    title,
+    content,
+):
+    """
+    Update a memory.
+    """
+
+    return self.update(
+        """
+        UPDATE conversation_memory
+        SET
+            title = ?,
+            content = ?
+        WHERE id = ?
+        """,
+        (
+            title,
+            content,
+            memory_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE MEMORY
+# ======================================================
+
+def delete_memory(self, memory_id):
+    """
+    Delete one memory.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM conversation_memory
+        WHERE id = ?
+        """,
+        (memory_id,),
+    )
+
+
+# ======================================================
+# DELETE USER MEMORIES
+# ======================================================
+
+def delete_user_memories(self, user_id):
+    """
+    Delete all memories for one user.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM conversation_memory
+        WHERE user_id = ?
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# MEMORY EXISTS
+# ======================================================
+
+def memory_exists(self, memory_id):
+    """
+    Check whether a memory exists.
+    """
+
+    return self.get_memory(memory_id) is not None
+
+
+# ======================================================
+# MEMORY COUNT
+# ======================================================
+
+def memory_count(self, user_id):
+    """
+    Return total memories for a user.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM conversation_memory
+        WHERE user_id = ?
+        """,
+        (user_id,),
+    )
+
+    return row["total"]
