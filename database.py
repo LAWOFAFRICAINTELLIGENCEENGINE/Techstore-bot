@@ -2060,3 +2060,183 @@ def memory_count(self, user_id):
     )
 
     return row["total"]
+
+# ======================================================
+# CREATE CACHE
+# ======================================================
+
+def create_cache(
+    self,
+    prompt_hash,
+    prompt,
+    response,
+    model,
+):
+    """
+    Save an AI response into cache.
+    """
+
+    return self.insert(
+        """
+        INSERT OR REPLACE INTO response_cache
+        (
+            prompt_hash,
+            prompt,
+            response,
+            model
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            prompt_hash,
+            prompt,
+            response,
+            model,
+        ),
+    )
+
+
+# ======================================================
+# GET CACHE
+# ======================================================
+
+def get_cache(self, prompt_hash):
+    """
+    Return cached response.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM response_cache
+        WHERE prompt_hash = ?
+        """,
+        (prompt_hash,),
+    )
+
+
+# ======================================================
+# CACHE EXISTS
+# ======================================================
+
+def cache_exists(self, prompt_hash):
+    """
+    Check whether cache exists.
+    """
+
+    return self.get_cache(prompt_hash) is not None
+
+
+# ======================================================
+# UPDATE CACHE
+# ======================================================
+
+def update_cache(
+    self,
+    prompt_hash,
+    response,
+):
+    """
+    Update cached response.
+    """
+
+    return self.update(
+        """
+        UPDATE response_cache
+        SET
+            response = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE prompt_hash = ?
+        """,
+        (
+            response,
+            prompt_hash,
+        ),
+    )
+
+
+# ======================================================
+# DELETE CACHE
+# ======================================================
+
+def delete_cache(self, prompt_hash):
+    """
+    Delete one cached response.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM response_cache
+        WHERE prompt_hash = ?
+        """,
+        (prompt_hash,),
+    )
+
+
+# ======================================================
+# CLEAR CACHE
+# ======================================================
+
+def clear_cache(self):
+    """
+    Remove every cached response.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM response_cache
+        """
+    )
+
+
+# ======================================================
+# CACHE COUNT
+# ======================================================
+
+def cache_count(self):
+    """
+    Return number of cached responses.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM response_cache
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET RECENT CACHE
+# ======================================================
+
+def get_recent_cache(self, limit=20):
+    """
+    Return recent cached responses.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM response_cache
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+
+# ======================================================
+# CACHE STATISTICS
+# ======================================================
+
+def cache_statistics(self):
+    """
+    Return cache statistics.
+    """
+
+    return {
+        "entries": self.cache_count(),
+    }
