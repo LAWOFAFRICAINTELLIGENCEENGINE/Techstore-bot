@@ -6372,4 +6372,212 @@ def performance_statistics(self):
     return {
         "reports": self.performance_report_count(),
     }
+
+# ======================================================
+# CREATE ANALYTICS RECORD
+# ======================================================
+
+def create_analytics_record(
+    self,
+    metric_name,
+    metric_value,
+    category="general",
+    user_id=None,
+    notes="",
+):
+    """
+    Store an analytics record.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO analytics
+        (
+            metric_name,
+            metric_value,
+            category,
+            user_id,
+            notes
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            metric_name,
+            metric_value,
+            category,
+            user_id,
+            notes,
+        ),
+    )
+
+
+# ======================================================
+# GET ANALYTICS RECORD
+# ======================================================
+
+def get_analytics_record(self, analytics_id):
+    """
+    Return one analytics record.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM analytics
+        WHERE id = ?
+        """,
+        (analytics_id,),
+    )
+
+
+# ======================================================
+# GET ALL ANALYTICS
+# ======================================================
+
+def get_all_analytics(self):
+    """
+    Return all analytics records.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM analytics
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET ANALYTICS BY CATEGORY
+# ======================================================
+
+def get_analytics_by_category(self, category):
+    """
+    Return analytics records for one category.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM analytics
+        WHERE category = ?
+        ORDER BY created_at DESC
+        """,
+        (category,),
+    )
+
+
+# ======================================================
+# GET USER ANALYTICS
+# ======================================================
+
+def get_user_analytics(self, user_id):
+    """
+    Return analytics for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM analytics
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# UPDATE ANALYTICS
+# ======================================================
+
+def update_analytics_record(
+    self,
+    analytics_id,
+    metric_value,
+    notes,
+):
+    """
+    Update an analytics record.
+    """
+
+    return self.update(
+        """
+        UPDATE analytics
+        SET
+            metric_value = ?,
+            notes = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            metric_value,
+            notes,
+            analytics_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE ANALYTICS
+# ======================================================
+
+def delete_analytics_record(self, analytics_id):
+    """
+    Delete an analytics record.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM analytics
+        WHERE id = ?
+        """,
+        (analytics_id,),
+    )
+
+
+# ======================================================
+# ANALYTICS EXISTS
+# ======================================================
+
+def analytics_record_exists(self, analytics_id):
+    """
+    Check whether an analytics record exists.
+    """
+
+    return self.get_analytics_record(analytics_id) is not None
+
+
+# ======================================================
+# ANALYTICS COUNT
+# ======================================================
+
+def analytics_count(self):
+    """
+    Return total analytics records.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM analytics
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# ANALYTICS STATISTICS
+# ======================================================
+
+def analytics_statistics(self):
+    """
+    Return analytics statistics.
+    """
+
+    return {
+        "total_records": self.analytics_count(),
+    }
     
