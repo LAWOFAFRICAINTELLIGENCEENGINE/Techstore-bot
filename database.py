@@ -3469,3 +3469,266 @@ def get_low_stock_products(self, minimum=5):
         """,
         (minimum,),
     )
+
+# ======================================================
+# CREATE SALE
+# ======================================================
+
+def create_sale(
+    self,
+    order_id,
+    customer_id,
+    product_id,
+    quantity,
+    unit_price,
+    total_amount,
+    payment_method="Cash",
+    payment_status="Paid",
+):
+    """
+    Record a completed sale.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO sales
+        (
+            order_id,
+            customer_id,
+            product_id,
+            quantity,
+            unit_price,
+            total_amount,
+            payment_method,
+            payment_status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            order_id,
+            customer_id,
+            product_id,
+            quantity,
+            unit_price,
+            total_amount,
+            payment_method,
+            payment_status,
+        ),
+    )
+
+
+# ======================================================
+# GET SALE
+# ======================================================
+
+def get_sale(self, sale_id):
+    """
+    Return one sale.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM sales
+        WHERE id = ?
+        """,
+        (sale_id,),
+    )
+
+
+# ======================================================
+# GET ALL SALES
+# ======================================================
+
+def get_all_sales(self):
+    """
+    Return all sales.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM sales
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET CUSTOMER SALES
+# ======================================================
+
+def get_customer_sales(self, customer_id):
+    """
+    Return all sales for a customer.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM sales
+        WHERE customer_id = ?
+        ORDER BY created_at DESC
+        """,
+        (customer_id,),
+    )
+
+
+# ======================================================
+# GET PRODUCT SALES
+# ======================================================
+
+def get_product_sales(self, product_id):
+    """
+    Return all sales for a product.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM sales
+        WHERE product_id = ?
+        ORDER BY created_at DESC
+        """,
+        (product_id,),
+    )
+
+
+# ======================================================
+# UPDATE SALE
+# ======================================================
+
+def update_sale(
+    self,
+    sale_id,
+    payment_status,
+    payment_method,
+):
+    """
+    Update sale payment information.
+    """
+
+    return self.update(
+        """
+        UPDATE sales
+        SET
+            payment_status = ?,
+            payment_method = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            payment_status,
+            payment_method,
+            sale_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE SALE
+# ======================================================
+
+def delete_sale(self, sale_id):
+    """
+    Delete a sale.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM sales
+        WHERE id = ?
+        """,
+        (sale_id,),
+    )
+
+
+# ======================================================
+# SALE EXISTS
+# ======================================================
+
+def sale_exists(self, sale_id):
+    """
+    Check whether a sale exists.
+    """
+
+    return self.get_sale(sale_id) is not None
+
+
+# ======================================================
+# SALES COUNT
+# ======================================================
+
+def sales_count(self):
+    """
+    Return total sales.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM sales
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# TOTAL REVENUE
+# ======================================================
+
+def total_revenue(self):
+    """
+    Calculate total revenue.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COALESCE(SUM(total_amount), 0) AS revenue
+        FROM sales
+        WHERE payment_status = 'Paid'
+        """
+    )
+
+    return row["revenue"]
+
+
+# ======================================================
+# GET RECENT SALES
+# ======================================================
+
+def get_recent_sales(self, limit=20):
+    """
+    Return recent sales.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM sales
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+
+# ======================================================
+# SALES BY PAYMENT STATUS
+# ======================================================
+
+def get_sales_by_payment_status(self, payment_status):
+    """
+    Return sales filtered by payment status.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM sales
+        WHERE payment_status = ?
+        ORDER BY created_at DESC
+        """,
+        (payment_status,),
+    )
