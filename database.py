@@ -87,9 +87,6 @@ else:
 # Automatically create database schema
     self.initialize_schema()
 
-    # Authentication Sessions
-self.create_sessions_table()
-
     # ======================================================
     # SQLITE INITIALIZATION
     # ======================================================
@@ -547,6 +544,9 @@ def create_tables(self):
 
     # Database Version
     self.create_migrations_table()
+
+    # Authentication Sessions
+    self.create_sessions_table()
 
    # Default Settings
     self.initialize_default_settings()
