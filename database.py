@@ -4215,3 +4215,241 @@ def plugin_count(self):
     )
 
     return row["total"]
+
+# ======================================================
+# CREATE API USAGE
+# ======================================================
+
+def create_api_usage(
+    self,
+    provider,
+    endpoint,
+    user_id=None,
+    tokens_used=0,
+    request_count=1,
+    response_time=0.0,
+    status="success",
+):
+    """
+    Record an API request.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO api_usage
+        (
+            provider,
+            endpoint,
+            user_id,
+            tokens_used,
+            request_count,
+            response_time,
+            status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            provider,
+            endpoint,
+            user_id,
+            tokens_used,
+            request_count,
+            response_time,
+            status,
+        ),
+    )
+
+
+# ======================================================
+# GET API USAGE
+# ======================================================
+
+def get_api_usage(self, usage_id):
+    """
+    Return one API usage record.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM api_usage
+        WHERE id = ?
+        """,
+        (usage_id,),
+    )
+
+
+# ======================================================
+# GET ALL API USAGE
+# ======================================================
+
+def get_all_api_usage(self):
+    """
+    Return all API usage records.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM api_usage
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET PROVIDER USAGE
+# ======================================================
+
+def get_provider_usage(self, provider):
+    """
+    Return usage for one provider.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM api_usage
+        WHERE provider = ?
+        ORDER BY created_at DESC
+        """,
+        (provider,),
+    )
+
+
+# ======================================================
+# GET USER API USAGE
+# ======================================================
+
+def get_user_api_usage(self, user_id):
+    """
+    Return API usage for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM api_usage
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# UPDATE API USAGE STATUS
+# ======================================================
+
+def update_api_usage_status(
+    self,
+    usage_id,
+    status,
+):
+    """
+    Update API request status.
+    """
+
+    return self.update(
+        """
+        UPDATE api_usage
+        SET
+            status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            status,
+            usage_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE API USAGE
+# ======================================================
+
+def delete_api_usage(self, usage_id):
+    """
+    Delete an API usage record.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM api_usage
+        WHERE id = ?
+        """,
+        (usage_id,),
+    )
+
+
+# ======================================================
+# API USAGE COUNT
+# ======================================================
+
+def api_usage_count(self):
+    """
+    Return total API requests.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM api_usage
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# TOTAL TOKENS USED
+# ======================================================
+
+def total_tokens_used(self):
+    """
+    Return total tokens consumed.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COALESCE(SUM(tokens_used), 0) AS total
+        FROM api_usage
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET FAILED REQUESTS
+# ======================================================
+
+def get_failed_requests(self):
+    """
+    Return failed API requests.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM api_usage
+        WHERE status = 'failed'
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# API USAGE STATISTICS
+# ======================================================
+
+def api_usage_statistics(self):
+    """
+    Return API usage statistics.
+    """
+
+    return {
+        "requests": self.api_usage_count(),
+        "tokens": self.total_tokens_used(),
+    }
