@@ -151,3 +151,173 @@ class CacheManager:
 # =====================================================
 
 cache = CacheManager()
+
+# ======================================================
+# GENERATE CACHE KEY
+# ======================================================
+
+def generate_key(self, value):
+    """
+    Generate a unique cache key.
+    """
+
+    return hashlib.sha256(
+        str(value).encode("utf-8")
+    ).hexdigest()
+
+
+# ======================================================
+# STORE CACHE
+# ======================================================
+
+def set(self, key, value, ttl=CACHE_DEFAULT_TTL):
+    """
+    Store data in cache.
+    """
+
+    with self.lock:
+
+        expires = time.time() + ttl
+
+        self.memory_cache[key] = {
+
+            "value": value,
+
+            "expires": expires
+
+        }
+
+        return True
+
+
+# ======================================================
+# GET CACHE
+# ======================================================
+
+def get(self, key):
+    """
+    Retrieve cached data.
+    """
+
+    with self.lock:
+
+        data = self.memory_cache.get(key)
+
+        if data is None:
+
+            self.cache_misses += 1
+
+            return None
+
+        if time.time() > data["expires"]:
+
+            del self.memory_cache[key]
+
+            self.cache_misses += 1
+
+            return None
+
+        self.cache_hits += 1
+
+        return data["value"]
+
+
+# ======================================================
+# CACHE EXISTS
+# ======================================================
+
+def exists(self, key):
+    """
+    Check whether cache exists.
+    """
+
+    return self.get(key) is not None
+
+
+# ======================================================
+# UPDATE CACHE
+# ======================================================
+
+def update(self, key, value, ttl=CACHE_DEFAULT_TTL):
+    """
+    Update cached data.
+    """
+
+    return self.set(key, value, ttl)
+
+
+# ======================================================
+# DELETE CACHE
+# ======================================================
+
+def delete(self, key):
+    """
+    Delete cached item.
+    """
+
+    with self.lock:
+
+        if key in self.memory_cache:
+
+            del self.memory_cache[key]
+
+            return True
+
+        return False
+
+
+# ======================================================
+# CLEAR CACHE
+# ======================================================
+
+def clear(self):
+    """
+    Remove all cached items.
+    """
+
+    with self.lock:
+
+        self.memory_cache.clear()
+
+        return True
+
+
+# ======================================================
+# CLEAN EXPIRED CACHE
+# ======================================================
+
+def cleanup(self):
+    """
+    Remove expired cache.
+    """
+
+    now = time.time()
+
+    expired = []
+
+    with self.lock:
+
+        for key, value in self.memory_cache.items():
+
+            if value["expires"] <= now:
+
+                expired.append(key)
+
+        for key in expired:
+
+            del self.memory_cache[key]
+
+    return len(expired)
+
+
+# ======================================================
+# CACHE COUNT
+# ======================================================
+
+def cache_count(self):
+    """
+    Return total cached items.
+    """
+
+    return len(self.memory_cache)
+    
