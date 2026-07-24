@@ -5967,3 +5967,221 @@ def document_statistics(self):
     return {
         "documents": self.document_count(),
     }
+
+# ======================================================
+# CREATE HEALTH REPORT
+# ======================================================
+
+def create_health_report(
+    self,
+    component,
+    status,
+    cpu_usage=0.0,
+    memory_usage=0.0,
+    disk_usage=0.0,
+    response_time=0.0,
+    notes="",
+):
+    """
+    Store a system health report.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO health_reports
+        (
+            component,
+            status,
+            cpu_usage,
+            memory_usage,
+            disk_usage,
+            response_time,
+            notes
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            component,
+            status,
+            cpu_usage,
+            memory_usage,
+            disk_usage,
+            response_time,
+            notes,
+        ),
+    )
+
+
+# ======================================================
+# GET HEALTH REPORT
+# ======================================================
+
+def get_health_report(self, report_id):
+    """
+    Return one health report.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM health_reports
+        WHERE id = ?
+        """,
+        (report_id,),
+    )
+
+
+# ======================================================
+# GET ALL HEALTH REPORTS
+# ======================================================
+
+def get_all_health_reports(self):
+    """
+    Return all health reports.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM health_reports
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET REPORTS BY STATUS
+# ======================================================
+
+def get_health_reports_by_status(self, status):
+    """
+    Return reports filtered by status.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM health_reports
+        WHERE status = ?
+        ORDER BY created_at DESC
+        """,
+        (status,),
+    )
+
+
+# ======================================================
+# GET REPORTS BY COMPONENT
+# ======================================================
+
+def get_health_reports_by_component(self, component):
+    """
+    Return reports for a specific component.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM health_reports
+        WHERE component = ?
+        ORDER BY created_at DESC
+        """,
+        (component,),
+    )
+
+
+# ======================================================
+# UPDATE HEALTH REPORT
+# ======================================================
+
+def update_health_report(
+    self,
+    report_id,
+    status,
+    notes,
+):
+    """
+    Update a health report.
+    """
+
+    return self.update(
+        """
+        UPDATE health_reports
+        SET
+            status = ?,
+            notes = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            status,
+            notes,
+            report_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE HEALTH REPORT
+# ======================================================
+
+def delete_health_report(self, report_id):
+    """
+    Delete a health report.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM health_reports
+        WHERE id = ?
+        """,
+        (report_id,),
+    )
+
+
+# ======================================================
+# HEALTH REPORT EXISTS
+# ======================================================
+
+def health_report_exists(self, report_id):
+    """
+    Check whether a health report exists.
+    """
+
+    return self.get_health_report(report_id) is not None
+
+
+# ======================================================
+# HEALTH REPORT COUNT
+# ======================================================
+
+def health_report_count(self):
+    """
+    Return total health reports.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM health_reports
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# HEALTH REPORT STATISTICS
+# ======================================================
+
+def health_report_statistics(self):
+    """
+    Return health report statistics.
+    """
+
+    return {
+        "reports": self.health_report_count(),
+        "healthy": len(self.get_health_reports_by_status("Healthy")),
+        "warning": len(self.get_health_reports_by_status("Warning")),
+        "critical": len(self.get_health_reports_by_status("Critical")),
+    }
+    
