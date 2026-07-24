@@ -467,4 +467,172 @@ def ai_cache_statistics(self):
     }
 
 
+# ======================================================
+# FILE CACHE KEY
+# ======================================================
+
+def generate_file_key(self, file_path):
+    """
+    Generate cache key for a file.
+    """
+
+    return self.generate_key(str(file_path))
+
+
+# ======================================================
+# CACHE FILE
+# ======================================================
+
+def cache_file(
+    self,
+    file_path,
+    file_data,
+    ttl=CACHE_DEFAULT_TTL,
+):
+    """
+    Cache a file.
+    """
+
+    key = self.generate_file_key(file_path)
+
+    return self.set(
+        key,
+        file_data,
+        ttl,
+    )
+
+
+# ======================================================
+# GET CACHED FILE
+# ======================================================
+
+def get_cached_file(self, file_path):
+    """
+    Retrieve cached file.
+    """
+
+    key = self.generate_file_key(file_path)
+
+    return self.get(key)
+
+
+# ======================================================
+# FILE EXISTS
+# ======================================================
+
+def file_cache_exists(self, file_path):
+    """
+    Check if cached file exists.
+    """
+
+    return (
+        self.get_cached_file(file_path)
+        is not None
+    )
+
+
+# ======================================================
+# DELETE FILE CACHE
+# ======================================================
+
+def delete_cached_file(self, file_path):
+    """
+    Delete cached file.
+    """
+
+    key = self.generate_file_key(file_path)
+
+    return self.delete(key)
+
+
+# ======================================================
+# IMAGE CACHE
+# ======================================================
+
+def cache_image(
+    self,
+    image_path,
+    image_data,
+    ttl=CACHE_DEFAULT_TTL,
+):
+
+    return self.cache_file(
+        image_path,
+        image_data,
+        ttl,
+    )
+
+
+# ======================================================
+# VIDEO CACHE
+# ======================================================
+
+def cache_video(
+    self,
+    video_path,
+    video_data,
+    ttl=CACHE_DEFAULT_TTL,
+):
+
+    return self.cache_file(
+        video_path,
+        video_data,
+        ttl,
+    )
+
+
+# ======================================================
+# VOICE CACHE
+# ======================================================
+
+def cache_voice(
+    self,
+    voice_path,
+    voice_data,
+    ttl=CACHE_DEFAULT_TTL,
+):
+
+    return self.cache_file(
+        voice_path,
+        voice_data,
+        ttl,
+    )
+
+
+# ======================================================
+# DOCUMENT CACHE
+# ======================================================
+
+def cache_document(
+    self,
+    document_path,
+    document_data,
+    ttl=CACHE_DEFAULT_TTL,
+):
+
+    return self.cache_file(
+        document_path,
+        document_data,
+        ttl,
+    )
+
+
+# ======================================================
+# CACHE FILE STATISTICS
+# ======================================================
+
+def file_cache_statistics(self):
+    """
+    Return file cache statistics.
+    """
+
+    return {
+
+        "cached_items": self.cache_count(),
+
+        "hits": self.cache_hits,
+
+        "misses": self.cache_misses,
+
+    }
     
