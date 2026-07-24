@@ -4860,3 +4860,257 @@ def log_statistics(self):
         "warnings": len(self.get_logs_by_level("WARNING")),
         "info": len(self.get_logs_by_level("INFO")),
     }
+
+# ======================================================
+# CREATE UPLOADED FILE
+# ======================================================
+
+def create_uploaded_file(
+    self,
+    user_id,
+    filename,
+    file_type,
+    file_size,
+    file_path,
+    mime_type="",
+    uploaded_by="user",
+):
+    """
+    Register an uploaded or generated file.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO uploaded_files
+        (
+            user_id,
+            filename,
+            file_type,
+            file_size,
+            file_path,
+            mime_type,
+            uploaded_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            filename,
+            file_type,
+            file_size,
+            file_path,
+            mime_type,
+            uploaded_by,
+        ),
+    )
+
+
+# ======================================================
+# GET FILE
+# ======================================================
+
+def get_uploaded_file(self, file_id):
+    """
+    Return one uploaded file.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM uploaded_files
+        WHERE id = ?
+        """,
+        (file_id,),
+    )
+
+
+# ======================================================
+# GET ALL FILES
+# ======================================================
+
+def get_all_uploaded_files(self):
+    """
+    Return all uploaded files.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM uploaded_files
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET USER FILES
+# ======================================================
+
+def get_user_uploaded_files(self, user_id):
+    """
+    Return uploaded files for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM uploaded_files
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# GET FILES BY TYPE
+# ======================================================
+
+def get_uploaded_files_by_type(self, file_type):
+    """
+    Return uploaded files filtered by type.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM uploaded_files
+        WHERE file_type = ?
+        ORDER BY created_at DESC
+        """,
+        (file_type,),
+    )
+
+
+# ======================================================
+# SEARCH FILES
+# ======================================================
+
+def search_uploaded_files(self, keyword):
+    """
+    Search uploaded files by filename.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM uploaded_files
+        WHERE filename LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (f"%{keyword}%",),
+    )
+
+
+# ======================================================
+# UPDATE FILE
+# ======================================================
+
+def update_uploaded_file(
+    self,
+    file_id,
+    filename,
+    file_path,
+):
+    """
+    Update uploaded file information.
+    """
+
+    return self.update(
+        """
+        UPDATE uploaded_files
+        SET
+            filename = ?,
+            file_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            filename,
+            file_path,
+            file_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE FILE
+# ======================================================
+
+def delete_uploaded_file(self, file_id):
+    """
+    Delete uploaded file.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM uploaded_files
+        WHERE id = ?
+        """,
+        (file_id,),
+    )
+
+
+# ======================================================
+# FILE EXISTS
+# ======================================================
+
+def uploaded_file_exists(self, file_id):
+    """
+    Check whether a file exists.
+    """
+
+    return self.get_uploaded_file(file_id) is not None
+
+
+# ======================================================
+# FILE COUNT
+# ======================================================
+
+def uploaded_file_count(self):
+    """
+    Return total uploaded files.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM uploaded_files
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# STORAGE USAGE
+# ======================================================
+
+def total_storage_used(self):
+    """
+    Return total storage used in bytes.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COALESCE(SUM(file_size), 0) AS total
+        FROM uploaded_files
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# FILE STATISTICS
+# ======================================================
+
+def uploaded_file_statistics(self):
+    """
+    Return uploaded file statistics.
+    """
+
+    return {
+        "files": self.uploaded_file_count(),
+        "storage": self.total_storage_used(),
+    }
