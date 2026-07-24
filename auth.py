@@ -236,3 +236,96 @@ def register_user(
     )
 
     return True, "Registration successful."
+
+# =====================================================
+# LOGIN USER
+# =====================================================
+
+def login(self, username, password):
+    """
+    Authenticate a user and create a session.
+    """
+
+    user = db.get_user_by_username(username)
+
+    if not user:
+        return False, "Invalid username or password."
+
+    password_hash = self.hash_password(password)
+
+    if password_hash != user["password_hash"]:
+        logger.warning(f"Failed login attempt: {username}")
+        return False, "Invalid username or password."
+
+    session_token = secrets.token_hex(32)
+
+    expires_at = datetime.utcnow() + timedelta(
+        seconds=SESSION_TIMEOUT
+    )
+
+    db.create_session(
+        user_id=user["id"],
+        session_token=session_token,
+        expires_at=expires_at,
+    )
+
+    db.update_last_login(user["id"])
+
+    logger.info(f"User logged in: {username}")
+
+    return True, {
+        "session_token": session_token,
+        "user": user,
+    }
+
+
+# =====================================================
+# VERIFY SESSION
+# =====================================================
+
+def verify_session(self, session_token):
+    """
+    Verify an active session.
+    """
+
+    session = db.get_session(session_token)
+
+    if not session:
+        return None
+
+    if session["expires_at"] < datetime.utcnow():
+        db.delete_session(session_token)
+        return None
+
+    return session
+
+
+# =====================================================
+# LOGOUT USER
+# =====================================================
+
+def logout(self, session_token):
+    """
+    Logout user.
+    """
+
+    db.delete_session(session_token)
+
+    logger.info("Session terminated.")
+
+    return True
+
+
+# =====================================================
+# CLEANUP EXPIRED SESSIONS
+# =====================================================
+
+def cleanup_sessions(self):
+    """
+    Remove expired sessions.
+    """
+
+    db.delete_expired_sessions()
+
+    logger.info("Expired sessions removed.")
+
