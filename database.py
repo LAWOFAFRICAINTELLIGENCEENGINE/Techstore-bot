@@ -3982,3 +3982,236 @@ def get_projects_by_type(self, project_type):
         """,
         (project_type,),
     )
+
+# ======================================================
+# CREATE PLUGIN
+# ======================================================
+
+def create_plugin(
+    self,
+    plugin_name,
+    version,
+    author="",
+    description="",
+    enabled=True,
+):
+    """
+    Register a plugin.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO plugins
+        (
+            plugin_name,
+            version,
+            author,
+            description,
+            enabled
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            plugin_name,
+            version,
+            author,
+            description,
+            int(enabled),
+        ),
+    )
+
+
+# ======================================================
+# GET PLUGIN
+# ======================================================
+
+def get_plugin(self, plugin_id):
+    """
+    Return one plugin.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM plugins
+        WHERE id = ?
+        """,
+        (plugin_id,),
+    )
+
+
+# ======================================================
+# GET PLUGIN BY NAME
+# ======================================================
+
+def get_plugin_by_name(self, plugin_name):
+    """
+    Return plugin by name.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM plugins
+        WHERE plugin_name = ?
+        """,
+        (plugin_name,),
+    )
+
+
+# ======================================================
+# GET ALL PLUGINS
+# ======================================================
+
+def get_all_plugins(self):
+    """
+    Return all plugins.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM plugins
+        ORDER BY plugin_name
+        """
+    )
+
+
+# ======================================================
+# UPDATE PLUGIN
+# ======================================================
+
+def update_plugin(
+    self,
+    plugin_id,
+    version,
+    description,
+    enabled,
+):
+    """
+    Update plugin.
+    """
+
+    return self.update(
+        """
+        UPDATE plugins
+        SET
+            version = ?,
+            description = ?,
+            enabled = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            version,
+            description,
+            int(enabled),
+            plugin_id,
+        ),
+    )
+
+
+# ======================================================
+# ENABLE PLUGIN
+# ======================================================
+
+def enable_plugin(self, plugin_id):
+    """
+    Enable plugin.
+    """
+
+    return self.update(
+        """
+        UPDATE plugins
+        SET enabled = 1
+        WHERE id = ?
+        """,
+        (plugin_id,),
+    )
+
+
+# ======================================================
+# DISABLE PLUGIN
+# ======================================================
+
+def disable_plugin(self, plugin_id):
+    """
+    Disable plugin.
+    """
+
+    return self.update(
+        """
+        UPDATE plugins
+        SET enabled = 0
+        WHERE id = ?
+        """,
+        (plugin_id,),
+    )
+
+
+# ======================================================
+# DELETE PLUGIN
+# ======================================================
+
+def delete_plugin(self, plugin_id):
+    """
+    Delete plugin.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM plugins
+        WHERE id = ?
+        """,
+        (plugin_id,),
+    )
+
+
+# ======================================================
+# PLUGIN EXISTS
+# ======================================================
+
+def plugin_exists(self, plugin_name):
+    """
+    Check whether a plugin exists.
+    """
+
+    return self.get_plugin_by_name(plugin_name) is not None
+
+
+# ======================================================
+# GET ENABLED PLUGINS
+# ======================================================
+
+def get_enabled_plugins(self):
+    """
+    Return enabled plugins.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM plugins
+        WHERE enabled = 1
+        ORDER BY plugin_name
+        """
+    )
+
+
+# ======================================================
+# PLUGIN COUNT
+# ======================================================
+
+def plugin_count(self):
+    """
+    Return total plugins.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM plugins
+        """
+    )
+
+    return row["total"]
