@@ -4651,3 +4651,212 @@ def diagnostic_statistics(self):
         "total": self.diagnostic_count(),
         "unresolved": len(self.get_unresolved_diagnostics()),
     }
+
+# ======================================================
+# CREATE LOG
+# ======================================================
+
+def create_log(
+    self,
+    level,
+    category,
+    message,
+    user_id=None,
+    source="system",
+    details="",
+):
+    """
+    Create a log entry.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO logs
+        (
+            level,
+            category,
+            message,
+            user_id,
+            source,
+            details
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            level,
+            category,
+            message,
+            user_id,
+            source,
+            details,
+        ),
+    )
+
+
+# ======================================================
+# GET LOG
+# ======================================================
+
+def get_log(self, log_id):
+    """
+    Return one log entry.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM logs
+        WHERE id = ?
+        """,
+        (log_id,),
+    )
+
+
+# ======================================================
+# GET ALL LOGS
+# ======================================================
+
+def get_all_logs(self, limit=100):
+    """
+    Return recent log entries.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM logs
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+
+# ======================================================
+# GET LOGS BY LEVEL
+# ======================================================
+
+def get_logs_by_level(self, level):
+    """
+    Return logs filtered by level.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM logs
+        WHERE level = ?
+        ORDER BY created_at DESC
+        """,
+        (level,),
+    )
+
+
+# ======================================================
+# GET LOGS BY CATEGORY
+# ======================================================
+
+def get_logs_by_category(self, category):
+    """
+    Return logs filtered by category.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM logs
+        WHERE category = ?
+        ORDER BY created_at DESC
+        """,
+        (category,),
+    )
+
+
+# ======================================================
+# GET USER LOGS
+# ======================================================
+
+def get_user_logs(self, user_id):
+    """
+    Return logs for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM logs
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# DELETE LOG
+# ======================================================
+
+def delete_log(self, log_id):
+    """
+    Delete one log entry.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM logs
+        WHERE id = ?
+        """,
+        (log_id,),
+    )
+
+
+# ======================================================
+# CLEAR LOGS
+# ======================================================
+
+def clear_logs(self):
+    """
+    Delete all log entries.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM logs
+        """
+    )
+
+
+# ======================================================
+# LOG COUNT
+# ======================================================
+
+def log_count(self):
+    """
+    Return total number of log entries.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM logs
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# LOG STATISTICS
+# ======================================================
+
+def log_statistics(self):
+    """
+    Return log statistics.
+    """
+
+    return {
+        "total": self.log_count(),
+        "errors": len(self.get_logs_by_level("ERROR")),
+        "warnings": len(self.get_logs_by_level("WARNING")),
+        "info": len(self.get_logs_by_level("INFO")),
+    }
