@@ -2240,3 +2240,220 @@ def cache_statistics(self):
     return {
         "entries": self.cache_count(),
     }
+
+# ======================================================
+# CREATE AI SESSION
+# ======================================================
+
+def create_ai_session(
+    self,
+    user_id,
+    session_name,
+    model,
+    status="active",
+):
+    """
+    Create a new AI session.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO ai_sessions
+        (
+            user_id,
+            session_name,
+            model,
+            status
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            session_name,
+            model,
+            status,
+        ),
+    )
+
+
+# ======================================================
+# GET AI SESSION
+# ======================================================
+
+def get_ai_session(self, session_id):
+    """
+    Return one AI session.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM ai_sessions
+        WHERE id = ?
+        """,
+        (session_id,),
+    )
+
+
+# ======================================================
+# GET USER AI SESSIONS
+# ======================================================
+
+def get_user_ai_sessions(self, user_id):
+    """
+    Return all AI sessions for a user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM ai_sessions
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# UPDATE SESSION STATUS
+# ======================================================
+
+def update_ai_session_status(
+    self,
+    session_id,
+    status,
+):
+    """
+    Update session status.
+    """
+
+    return self.update(
+        """
+        UPDATE ai_sessions
+        SET
+            status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            status,
+            session_id,
+        ),
+    )
+
+
+# ======================================================
+# UPDATE SESSION MODEL
+# ======================================================
+
+def update_ai_session_model(
+    self,
+    session_id,
+    model,
+):
+    """
+    Change AI model.
+    """
+
+    return self.update(
+        """
+        UPDATE ai_sessions
+        SET
+            model = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            model,
+            session_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE SESSION
+# ======================================================
+
+def delete_ai_session(self, session_id):
+    """
+    Delete one AI session.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM ai_sessions
+        WHERE id = ?
+        """,
+        (session_id,),
+    )
+
+
+# ======================================================
+# DELETE USER SESSIONS
+# ======================================================
+
+def delete_user_ai_sessions(self, user_id):
+    """
+    Delete all sessions for one user.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM ai_sessions
+        WHERE user_id = ?
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SESSION EXISTS
+# ======================================================
+
+def ai_session_exists(self, session_id):
+    """
+    Check whether a session exists.
+    """
+
+    return self.get_ai_session(session_id) is not None
+
+
+# ======================================================
+# SESSION COUNT
+# ======================================================
+
+def ai_session_count(self, user_id):
+    """
+    Return total sessions for a user.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM ai_sessions
+        WHERE user_id = ?
+        """,
+        (user_id,),
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET ACTIVE SESSIONS
+# ======================================================
+
+def get_active_ai_sessions(self):
+    """
+    Return all active AI sessions.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM ai_sessions
+        WHERE status = 'active'
+        ORDER BY created_at DESC
+        """
+    )
