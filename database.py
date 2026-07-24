@@ -5542,3 +5542,217 @@ def video_statistics(self):
     return {
         "videos": self.video_count(),
     }
+
+# ======================================================
+# CREATE VOICE
+# ======================================================
+
+def create_voice(
+    self,
+    user_id,
+    filename,
+    voice_path,
+    duration=0,
+    language="",
+    transcript="",
+    generated_by="user",
+):
+    """
+    Register a voice recording.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO voice
+        (
+            user_id,
+            filename,
+            voice_path,
+            duration,
+            language,
+            transcript,
+            generated_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            filename,
+            voice_path,
+            duration,
+            language,
+            transcript,
+            generated_by,
+        ),
+    )
+
+
+# ======================================================
+# GET VOICE
+# ======================================================
+
+def get_voice(self, voice_id):
+    """
+    Return one voice recording.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM voice
+        WHERE id = ?
+        """,
+        (voice_id,),
+    )
+
+
+# ======================================================
+# GET ALL VOICE RECORDINGS
+# ======================================================
+
+def get_all_voice(self):
+    """
+    Return all voice recordings.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM voice
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET USER VOICE RECORDINGS
+# ======================================================
+
+def get_user_voice(self, user_id):
+    """
+    Return voice recordings for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM voice
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SEARCH VOICE RECORDINGS
+# ======================================================
+
+def search_voice(self, keyword):
+    """
+    Search voice recordings.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM voice
+        WHERE filename LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (f"%{keyword}%",),
+    )
+
+
+# ======================================================
+# UPDATE VOICE
+# ======================================================
+
+def update_voice(
+    self,
+    voice_id,
+    filename,
+    voice_path,
+):
+    """
+    Update voice information.
+    """
+
+    return self.update(
+        """
+        UPDATE voice
+        SET
+            filename = ?,
+            voice_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            filename,
+            voice_path,
+            voice_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE VOICE
+# ======================================================
+
+def delete_voice(self, voice_id):
+    """
+    Delete a voice recording.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM voice
+        WHERE id = ?
+        """,
+        (voice_id,),
+    )
+
+
+# ======================================================
+# VOICE EXISTS
+# ======================================================
+
+def voice_exists(self, voice_id):
+    """
+    Check whether a voice recording exists.
+    """
+
+    return self.get_voice(voice_id) is not None
+
+
+# ======================================================
+# VOICE COUNT
+# ======================================================
+
+def voice_count(self):
+    """
+    Return total voice recordings.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM voice
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# VOICE STATISTICS
+# ======================================================
+
+def voice_statistics(self):
+    """
+    Return voice statistics.
+    """
+
+    return {
+        "voice_recordings": self.voice_count(),
+    }
