@@ -554,9 +554,6 @@ def create_tables(self):
     # Default Settings
     self.initialize_default_api_keys()
 
-    #Detabase Settings
-    self.create_sessions_table()
-
 
     logger.info("All TechStore database tables created successfully.")
 
