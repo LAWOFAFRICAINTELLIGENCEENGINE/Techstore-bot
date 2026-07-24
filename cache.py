@@ -635,4 +635,147 @@ def file_cache_statistics(self):
         "misses": self.cache_misses,
 
     }
-    
+
+# ======================================================
+# REMOVE OLDEST CACHE ENTRY
+# ======================================================
+
+def evict_oldest(self):
+    """
+    Remove the oldest cached item.
+    """
+
+    with self.lock:
+
+        if not self.memory_cache:
+            return False
+
+        oldest_key = min(
+            self.memory_cache,
+            key=lambda key: self.memory_cache[key]["expires"]
+        )
+
+        del self.memory_cache[oldest_key]
+
+        return True
+
+
+# ======================================================
+# ENFORCE CACHE SIZE
+# ======================================================
+
+def enforce_cache_limit(self):
+    """
+    Keep cache within maximum size.
+    """
+
+    while len(self.memory_cache) > CACHE_MAX_SIZE:
+
+        self.evict_oldest()
+
+
+# ======================================================
+# STORE WITH LIMIT
+# ======================================================
+
+def smart_set(
+    self,
+    key,
+    value,
+    ttl=CACHE_DEFAULT_TTL,
+):
+    """
+    Store cache while respecting limits.
+    """
+
+    result = self.set(
+        key,
+        value,
+        ttl,
+    )
+
+    self.enforce_cache_limit()
+
+    return result
+
+
+# ======================================================
+# CACHE MEMORY USAGE
+# ======================================================
+
+def memory_usage(self):
+    """
+    Estimate cache memory usage.
+    """
+
+    total = 0
+
+    for item in self.memory_cache.values():
+
+        total += len(str(item))
+
+    return total
+
+
+# ======================================================
+# CACHE HIT RATE
+# ======================================================
+
+def hit_rate(self):
+    """
+    Return cache hit percentage.
+    """
+
+    total = self.cache_hits + self.cache_misses
+
+    if total == 0:
+
+        return 0.0
+
+    return (self.cache_hits / total) * 100
+
+
+# ======================================================
+# CACHE MISS RATE
+# ======================================================
+
+def miss_rate(self):
+    """
+    Return cache miss percentage.
+    """
+
+    total = self.cache_hits + self.cache_misses
+
+    if total == 0:
+
+        return 0.0
+
+    return (self.cache_misses / total) * 100
+
+
+# ======================================================
+# SMART CACHE REPORT
+# ======================================================
+
+def smart_cache_report(self):
+    """
+    Return smart cache statistics.
+    """
+
+    return {
+
+        "entries": self.cache_count(),
+
+        "memory_usage": self.memory_usage(),
+
+        "hit_rate": self.hit_rate(),
+
+        "miss_rate": self.miss_rate(),
+
+        "hits": self.cache_hits,
+
+        "misses": self.cache_misses,
+
+    }
+
+
