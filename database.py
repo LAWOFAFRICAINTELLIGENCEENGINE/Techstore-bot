@@ -551,6 +551,9 @@ def create_tables(self):
     # Default Settings
     self.initialize_default_api_keys()
 
+    #Detabase Settings
+    self.create_sessions_table()
+
 
     logger.info("All TechStore database tables created successfully.")
 
@@ -2457,6 +2460,33 @@ def get_active_ai_sessions(self):
         ORDER BY created_at DESC
         """
     )
+
+# =====================================================
+# SESSIONS TABLE
+# =====================================================
+
+def create_sessions_table(self):
+    """
+    Create authentication sessions table.
+    """
+
+    self.execute("""
+    CREATE TABLE IF NOT EXISTS sessions (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER NOT NULL,
+
+        session_token TEXT UNIQUE NOT NULL,
+
+        expires_at TIMESTAMP NOT NULL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (user_id) REFERENCES users(id)
+
+    )
+    """)
 
 # ======================================================
 # CREATE INVENTORY ITEM
