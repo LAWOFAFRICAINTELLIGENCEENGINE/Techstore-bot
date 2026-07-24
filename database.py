@@ -6581,3 +6581,194 @@ def analytics_statistics(self):
         "total_records": self.analytics_count(),
     }
     
+# ======================================================
+# CREATE BACKUP RECORD
+# ======================================================
+
+def create_backup(
+    self,
+    backup_name,
+    backup_path,
+    backup_size=0,
+    backup_type="manual",
+    status="completed",
+    notes="",
+):
+    """
+    Register a database backup.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO backups
+        (
+            backup_name,
+            backup_path,
+            backup_size,
+            backup_type,
+            status,
+            notes
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            backup_name,
+            backup_path,
+            backup_size,
+            backup_type,
+            status,
+            notes,
+        ),
+    )
+
+
+# ======================================================
+# GET BACKUP
+# ======================================================
+
+def get_backup(self, backup_id):
+    """
+    Return one backup record.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM backups
+        WHERE id = ?
+        """,
+        (backup_id,),
+    )
+
+
+# ======================================================
+# GET ALL BACKUPS
+# ======================================================
+
+def get_all_backups(self):
+    """
+    Return all backup records.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM backups
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET BACKUPS BY TYPE
+# ======================================================
+
+def get_backups_by_type(self, backup_type):
+    """
+    Return backups filtered by type.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM backups
+        WHERE backup_type = ?
+        ORDER BY created_at DESC
+        """,
+        (backup_type,),
+    )
+
+
+# ======================================================
+# UPDATE BACKUP STATUS
+# ======================================================
+
+def update_backup_status(
+    self,
+    backup_id,
+    status,
+    notes="",
+):
+    """
+    Update backup status.
+    """
+
+    return self.update(
+        """
+        UPDATE backups
+        SET
+            status = ?,
+            notes = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            status,
+            notes,
+            backup_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE BACKUP
+# ======================================================
+
+def delete_backup(self, backup_id):
+    """
+    Delete a backup record.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM backups
+        WHERE id = ?
+        """,
+        (backup_id,),
+    )
+
+
+# ======================================================
+# BACKUP EXISTS
+# ======================================================
+
+def backup_exists(self, backup_id):
+    """
+    Check whether a backup exists.
+    """
+
+    return self.get_backup(backup_id) is not None
+
+
+# ======================================================
+# BACKUP COUNT
+# ======================================================
+
+def backup_count(self):
+    """
+    Return total backups.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM backups
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# BACKUP STATISTICS
+# ======================================================
+
+def backup_statistics(self):
+    """
+    Return backup statistics.
+    """
+
+    return {
+        "total_backups": self.backup_count(),
+    }
+    
