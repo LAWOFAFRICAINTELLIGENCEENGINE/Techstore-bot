@@ -6921,4 +6921,176 @@ def perform_database_maintenance(self):
     return {
         "status": "completed"
     }
+
+import shutil
+import json
+from datetime import datetime
+
+# ======================================================
+# EXPORT DATABASE
+# ======================================================
+
+def export_database(self, export_path):
+    """
+    Export the SQLite database file.
+    """
+
+    if self.database_engine != "sqlite":
+        raise NotImplementedError(
+            "Export currently supports SQLite only."
+        )
+
+    shutil.copy2(self.database_path, export_path)
+
+    return export_path
+
+
+# ======================================================
+# IMPORT DATABASE
+# ======================================================
+
+def import_database(self, import_path):
+    """
+    Replace the current SQLite database.
+    """
+
+    if self.database_engine != "sqlite":
+        raise NotImplementedError(
+            "Import currently supports SQLite only."
+        )
+
+    self.close()
+
+    shutil.copy2(import_path, self.database_path)
+
+    self.initialize()
+
+    return True
+
+
+# ======================================================
+# EXPORT DATABASE INFORMATION
+# ======================================================
+
+def export_database_information(self):
+    """
+    Return database information.
+    """
+
+    return {
+
+        "engine": self.database_engine,
+
+        "database": str(self.database_path),
+
+        "connected": self.is_connected(),
+
+        "version": self.database_version(),
+
+        "size": self.database_size(),
+
+        "generated_at": datetime.utcnow().isoformat(),
+
+    }
+
+
+# ======================================================
+# SAVE DATABASE REPORT
+# ======================================================
+
+def save_database_report(self, report_path):
+    """
+    Save database information as JSON.
+    """
+
+    report = self.export_database_information()
+
+    with open(report_path, "w", encoding="utf-8") as file:
+
+        json.dump(report, file, indent=4)
+
+    return report_path
+
+
+# ======================================================
+# RESET DATABASE
+# ======================================================
+
+def reset_database(self):
+    """
+    Delete all application data.
+    """
+
+    tables = [
+
+        "users",
+        "roles",
+        "settings",
+        "api_keys",
+        "conversation_memory",
+        "response_cache",
+        "ai_sessions",
+        "inventory",
+        "customers",
+        "orders",
+        "products",
+        "sales",
+        "projects",
+        "plugins",
+        "api_usage",
+        "diagnostics",
+        "logs",
+        "uploaded_files",
+        "images",
+        "videos",
+        "voice",
+        "documents",
+        "health_reports",
+        "performance_reports",
+        "analytics",
+        "backups",
+
+    ]
+
+    for table in tables:
+
+        self.execute(f"DELETE FROM {table}")
+
+    return True
+
+
+# ======================================================
+# DATABASE SUMMARY
+# ======================================================
+
+def database_summary(self):
+    """
+    Return a summary of the database.
+    """
+
+    return {
+
+        "users": self.user_count(),
+
+        "products": self.product_count(),
+
+        "customers": self.customer_count(),
+
+        "projects": self.project_count(),
+
+        "plugins": self.plugin_count(),
+
+        "documents": self.document_count(),
+
+        "images": self.image_count(),
+
+        "videos": self.video_count(),
+
+        "voice": self.voice_count(),
+
+        "analytics": self.analytics_count(),
+
+        "backups": self.backup_count(),
+
+    }
     
