@@ -3184,3 +3184,288 @@ def get_orders_by_status(self, status):
         """,
         (status,),
     )
+
+# ======================================================
+# CREATE PRODUCT
+# ======================================================
+
+def create_product(
+    self,
+    product_name,
+    sku,
+    category,
+    description="",
+    price=0.0,
+    stock=0,
+    image_url="",
+    status="Active",
+):
+    """
+    Create a new product.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO products
+        (
+            product_name,
+            sku,
+            category,
+            description,
+            price,
+            stock,
+            image_url,
+            status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            product_name,
+            sku,
+            category,
+            description,
+            price,
+            stock,
+            image_url,
+            status,
+        ),
+    )
+
+
+# ======================================================
+# GET PRODUCT
+# ======================================================
+
+def get_product(self, product_id):
+    """
+    Return one product.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM products
+        WHERE id = ?
+        """,
+        (product_id,),
+    )
+
+
+# ======================================================
+# GET PRODUCT BY SKU
+# ======================================================
+
+def get_product_by_sku(self, sku):
+    """
+    Return one product using SKU.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM products
+        WHERE sku = ?
+        """,
+        (sku,),
+    )
+
+
+# ======================================================
+# GET ALL PRODUCTS
+# ======================================================
+
+def get_all_products(self):
+    """
+    Return all products.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM products
+        ORDER BY product_name
+        """
+    )
+
+
+# ======================================================
+# SEARCH PRODUCTS
+# ======================================================
+
+def search_products(self, keyword):
+    """
+    Search products.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM products
+        WHERE
+            product_name LIKE ?
+            OR sku LIKE ?
+            OR category LIKE ?
+            OR description LIKE ?
+        ORDER BY product_name
+        """,
+        (
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+        ),
+    )
+
+
+# ======================================================
+# UPDATE PRODUCT
+# ======================================================
+
+def update_product(
+    self,
+    product_id,
+    product_name,
+    category,
+    description,
+    price,
+    stock,
+    image_url,
+    status,
+):
+    """
+    Update product.
+    """
+
+    return self.update(
+        """
+        UPDATE products
+        SET
+            product_name = ?,
+            category = ?,
+            description = ?,
+            price = ?,
+            stock = ?,
+            image_url = ?,
+            status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            product_name,
+            category,
+            description,
+            price,
+            stock,
+            image_url,
+            status,
+            product_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE PRODUCT
+# ======================================================
+
+def delete_product(self, product_id):
+    """
+    Delete a product.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM products
+        WHERE id = ?
+        """,
+        (product_id,),
+    )
+
+
+# ======================================================
+# PRODUCT EXISTS
+# ======================================================
+
+def product_exists(self, sku):
+    """
+    Check whether a product exists.
+    """
+
+    return self.get_product_by_sku(sku) is not None
+
+
+# ======================================================
+# PRODUCT COUNT
+# ======================================================
+
+def product_count(self):
+    """
+    Return total products.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM products
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET PRODUCTS BY CATEGORY
+# ======================================================
+
+def get_products_by_category(self, category):
+    """
+    Return all products in a category.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM products
+        WHERE category = ?
+        ORDER BY product_name
+        """,
+        (category,),
+    )
+
+
+# ======================================================
+# GET ACTIVE PRODUCTS
+# ======================================================
+
+def get_active_products(self):
+    """
+    Return active products.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM products
+        WHERE status = 'Active'
+        ORDER BY product_name
+        """
+    )
+
+
+# ======================================================
+# GET LOW STOCK PRODUCTS
+# ======================================================
+
+def get_low_stock_products(self, minimum=5):
+    """
+    Return products with low stock.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM products
+        WHERE stock <= ?
+        ORDER BY stock ASC
+        """,
+        (minimum,),
+    )
