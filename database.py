@@ -2457,3 +2457,232 @@ def get_active_ai_sessions(self):
         ORDER BY created_at DESC
         """
     )
+
+# ======================================================
+# CREATE INVENTORY ITEM
+# ======================================================
+
+def create_inventory_item(
+    self,
+    product_name,
+    sku,
+    category,
+    quantity,
+    price,
+    supplier="",
+    status="In Stock",
+):
+    """
+    Create inventory item.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO inventory
+        (
+            product_name,
+            sku,
+            category,
+            quantity,
+            price,
+            supplier,
+            status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            product_name,
+            sku,
+            category,
+            quantity,
+            price,
+            supplier,
+            status,
+        ),
+    )
+
+
+# ======================================================
+# GET INVENTORY ITEM
+# ======================================================
+
+def get_inventory_item(self, item_id):
+    """
+    Return one inventory item.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM inventory
+        WHERE id = ?
+        """,
+        (item_id,),
+    )
+
+
+# ======================================================
+# GET ALL INVENTORY
+# ======================================================
+
+def get_inventory(self):
+    """
+    Return all inventory.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM inventory
+        ORDER BY product_name
+        """
+    )
+
+
+# ======================================================
+# SEARCH INVENTORY
+# ======================================================
+
+def search_inventory(self, keyword):
+    """
+    Search inventory.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM inventory
+        WHERE
+            product_name LIKE ?
+            OR sku LIKE ?
+            OR category LIKE ?
+        ORDER BY product_name
+        """,
+        (
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+        ),
+    )
+
+
+# ======================================================
+# UPDATE INVENTORY ITEM
+# ======================================================
+
+def update_inventory_item(
+    self,
+    item_id,
+    quantity,
+    price,
+    status,
+):
+    """
+    Update inventory.
+    """
+
+    return self.update(
+        """
+        UPDATE inventory
+        SET
+            quantity = ?,
+            price = ?,
+            status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            quantity,
+            price,
+            status,
+            item_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE INVENTORY ITEM
+# ======================================================
+
+def delete_inventory_item(self, item_id):
+    """
+    Delete inventory item.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM inventory
+        WHERE id = ?
+        """,
+        (item_id,),
+    )
+
+
+# ======================================================
+# INVENTORY EXISTS
+# ======================================================
+
+def inventory_exists(self, item_id):
+    """
+    Check whether an inventory item exists.
+    """
+
+    return self.get_inventory_item(item_id) is not None
+
+
+# ======================================================
+# INVENTORY COUNT
+# ======================================================
+
+def inventory_count(self):
+    """
+    Return total inventory items.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM inventory
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# LOW STOCK ITEMS
+# ======================================================
+
+def get_low_stock_items(self, minimum=5):
+    """
+    Return products with low stock.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM inventory
+        WHERE quantity <= ?
+        ORDER BY quantity ASC
+        """,
+        (minimum,),
+    )
+
+
+# ======================================================
+# OUT OF STOCK ITEMS
+# ======================================================
+
+def get_out_of_stock_items(self):
+    """
+    Return products with no stock.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM inventory
+        WHERE quantity = 0
+        ORDER BY product_name
+        """
+    )
