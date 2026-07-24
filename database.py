@@ -7094,3 +7094,103 @@ def database_summary(self):
 
     }
     
+# ======================================================
+# DATABASE VALIDATION
+# ======================================================
+
+def validate_database(self):
+    """
+    Validate database health.
+    """
+
+    report = {
+
+        "connected": self.is_connected(),
+
+        "engine": self.get_database_engine(),
+
+        "version": self.database_version(),
+
+        "integrity": self.check_database_integrity(),
+
+        "summary": self.database_summary(),
+
+    }
+
+    return report
+
+
+# ======================================================
+# CHECK REQUIRED TABLES
+# ======================================================
+
+def check_required_tables(self):
+    """
+    Verify required tables exist.
+    """
+
+    required_tables = [
+
+        "users",
+        "roles",
+        "settings",
+        "api_keys",
+        "conversation_memory",
+        "response_cache",
+        "ai_sessions",
+        "inventory",
+        "customers",
+        "orders",
+        "products",
+        "sales",
+        "projects",
+        "plugins",
+        "api_usage",
+        "diagnostics",
+        "logs",
+        "uploaded_files",
+        "images",
+        "videos",
+        "voice",
+        "documents",
+        "health_reports",
+        "performance_reports",
+        "analytics",
+        "backups",
+        "migrations",
+
+    ]
+
+    missing = []
+
+    for table in required_tables:
+
+        row = self.fetch_one(
+            """
+            SELECT name
+            FROM sqlite_master
+            WHERE type='table'
+            AND name=?
+            """,
+            (table,),
+        )
+
+        if row is None:
+            missing.append(table)
+
+    return missing
+
+
+# ======================================================
+# DATABASE READY
+# ======================================================
+
+def database_ready(self):
+    """
+    Return True if database is ready.
+    """
+
+    return (
+        self.is_connected()
+        and len(self.check_required_tables()) == 0
+    )
