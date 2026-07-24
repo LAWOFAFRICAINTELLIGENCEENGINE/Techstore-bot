@@ -2929,3 +2929,258 @@ def get_recent_customers(self, limit=20):
         """,
         (limit,),
     )
+
+# ======================================================
+# CREATE ORDER
+# ======================================================
+
+def create_order(
+    self,
+    customer_id,
+    order_number,
+    total_amount,
+    status="Pending",
+):
+    """
+    Create a new order.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO orders
+        (
+            customer_id,
+            order_number,
+            total_amount,
+            status
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            customer_id,
+            order_number,
+            total_amount,
+            status,
+        ),
+    )
+
+
+# ======================================================
+# GET ORDER
+# ======================================================
+
+def get_order(self, order_id):
+    """
+    Return one order.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM orders
+        WHERE id = ?
+        """,
+        (order_id,),
+    )
+
+
+# ======================================================
+# GET ORDER BY NUMBER
+# ======================================================
+
+def get_order_by_number(self, order_number):
+    """
+    Return an order using its order number.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM orders
+        WHERE order_number = ?
+        """,
+        (order_number,),
+    )
+
+
+# ======================================================
+# GET CUSTOMER ORDERS
+# ======================================================
+
+def get_customer_orders(self, customer_id):
+    """
+    Return all orders for a customer.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM orders
+        WHERE customer_id = ?
+        ORDER BY created_at DESC
+        """,
+        (customer_id,),
+    )
+
+
+# ======================================================
+# GET ALL ORDERS
+# ======================================================
+
+def get_all_orders(self):
+    """
+    Return all orders.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM orders
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# UPDATE ORDER STATUS
+# ======================================================
+
+def update_order_status(
+    self,
+    order_id,
+    status,
+):
+    """
+    Update order status.
+    """
+
+    return self.update(
+        """
+        UPDATE orders
+        SET
+            status = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            status,
+            order_id,
+        ),
+    )
+
+
+# ======================================================
+# UPDATE ORDER TOTAL
+# ======================================================
+
+def update_order_total(
+    self,
+    order_id,
+    total_amount,
+):
+    """
+    Update order total.
+    """
+
+    return self.update(
+        """
+        UPDATE orders
+        SET
+            total_amount = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            total_amount,
+            order_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE ORDER
+# ======================================================
+
+def delete_order(self, order_id):
+    """
+    Delete an order.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM orders
+        WHERE id = ?
+        """,
+        (order_id,),
+    )
+
+
+# ======================================================
+# ORDER EXISTS
+# ======================================================
+
+def order_exists(self, order_number):
+    """
+    Check whether an order exists.
+    """
+
+    return self.get_order_by_number(order_number) is not None
+
+
+# ======================================================
+# ORDER COUNT
+# ======================================================
+
+def order_count(self):
+    """
+    Return total orders.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM orders
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET RECENT ORDERS
+# ======================================================
+
+def get_recent_orders(self, limit=20):
+    """
+    Return recent orders.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM orders
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+
+# ======================================================
+# GET ORDERS BY STATUS
+# ======================================================
+
+def get_orders_by_status(self, status):
+    """
+    Return orders by status.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM orders
+        WHERE status = ?
+        ORDER BY created_at DESC
+        """,
+        (status,),
+    )
