@@ -3732,3 +3732,253 @@ def get_sales_by_payment_status(self, payment_status):
         """,
         (payment_status,),
     )
+
+# ======================================================
+# CREATE PROJECT
+# ======================================================
+
+def create_project(
+    self,
+    user_id,
+    project_name,
+    project_type,
+    description="",
+    status="Draft",
+    project_path="",
+):
+    """
+    Create a new project.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO projects
+        (
+            user_id,
+            project_name,
+            project_type,
+            description,
+            status,
+            project_path
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            project_name,
+            project_type,
+            description,
+            status,
+            project_path,
+        ),
+    )
+
+
+# ======================================================
+# GET PROJECT
+# ======================================================
+
+def get_project(self, project_id):
+    """
+    Return one project.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM projects
+        WHERE id = ?
+        """,
+        (project_id,),
+    )
+
+
+# ======================================================
+# GET USER PROJECTS
+# ======================================================
+
+def get_user_projects(self, user_id):
+    """
+    Return all projects for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM projects
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# GET ALL PROJECTS
+# ======================================================
+
+def get_all_projects(self):
+    """
+    Return all projects.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM projects
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# SEARCH PROJECTS
+# ======================================================
+
+def search_projects(self, keyword):
+    """
+    Search projects.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM projects
+        WHERE
+            project_name LIKE ?
+            OR project_type LIKE ?
+            OR description LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+        ),
+    )
+
+
+# ======================================================
+# UPDATE PROJECT
+# ======================================================
+
+def update_project(
+    self,
+    project_id,
+    project_name,
+    description,
+    status,
+    project_path,
+):
+    """
+    Update project.
+    """
+
+    return self.update(
+        """
+        UPDATE projects
+        SET
+            project_name = ?,
+            description = ?,
+            status = ?,
+            project_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            project_name,
+            description,
+            status,
+            project_path,
+            project_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE PROJECT
+# ======================================================
+
+def delete_project(self, project_id):
+    """
+    Delete a project.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM projects
+        WHERE id = ?
+        """,
+        (project_id,),
+    )
+
+
+# ======================================================
+# PROJECT EXISTS
+# ======================================================
+
+def project_exists(self, project_id):
+    """
+    Check whether a project exists.
+    """
+
+    return self.get_project(project_id) is not None
+
+
+# ======================================================
+# PROJECT COUNT
+# ======================================================
+
+def project_count(self):
+    """
+    Return total projects.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM projects
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET PROJECTS BY STATUS
+# ======================================================
+
+def get_projects_by_status(self, status):
+    """
+    Return projects by status.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM projects
+        WHERE status = ?
+        ORDER BY created_at DESC
+        """,
+        (status,),
+    )
+
+
+# ======================================================
+# GET PROJECTS BY TYPE
+# ======================================================
+
+def get_projects_by_type(self, project_type):
+    """
+    Return projects by type.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM projects
+        WHERE project_type = ?
+        ORDER BY created_at DESC
+        """,
+        (project_type,),
+    )
