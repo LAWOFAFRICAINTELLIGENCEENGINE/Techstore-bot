@@ -778,4 +778,146 @@ def smart_cache_report(self):
 
     }
 
+# ======================================================
+# CACHE HEALTH CHECK
+# ======================================================
+
+def cache_health(self):
+    """
+    Return cache health information.
+    """
+
+    return {
+
+        "status": "healthy" if CACHE_ENABLED else "disabled",
+
+        "enabled": CACHE_ENABLED,
+
+        "entries": self.cache_count(),
+
+        "hits": self.cache_hits,
+
+        "misses": self.cache_misses,
+
+        "hit_rate": self.hit_rate(),
+
+        "memory_usage": self.memory_usage(),
+
+        "cache_directory": str(self.cache_directory),
+
+    }
+
+
+# ======================================================
+# VALIDATE CACHE
+# ======================================================
+
+def validate_cache(self):
+    """
+    Validate cache contents.
+    """
+
+    invalid = []
+
+    now = time.time()
+
+    for key, value in self.memory_cache.items():
+
+        if "value" not in value:
+
+            invalid.append(key)
+
+            continue
+
+        if "expires" not in value:
+
+            invalid.append(key)
+
+            continue
+
+        if value["expires"] < now:
+
+            invalid.append(key)
+
+    return invalid
+
+
+# ======================================================
+# REPAIR CACHE
+# ======================================================
+
+def repair_cache(self):
+    """
+    Remove invalid cache entries.
+    """
+
+    invalid = self.validate_cache()
+
+    for key in invalid:
+
+        self.delete(key)
+
+    return len(invalid)
+
+
+# ======================================================
+# CACHE DIAGNOSTICS
+# ======================================================
+
+def diagnostics(self):
+    """
+    Return cache diagnostics.
+    """
+
+    return {
+
+        "health": self.cache_health(),
+
+        "invalid_entries": len(self.validate_cache()),
+
+        "cached_items": self.cache_count(),
+
+        "hits": self.cache_hits,
+
+        "misses": self.cache_misses,
+
+    }
+
+
+# ======================================================
+# RESET CACHE STATISTICS
+# ======================================================
+
+def reset_statistics(self):
+    """
+    Reset cache statistics.
+    """
+
+    self.cache_hits = 0
+
+    self.cache_misses = 0
+
+    return True
+
+
+# ======================================================
+# EXPORT CACHE REPORT
+# ======================================================
+
+def cache_report(self):
+    """
+    Return complete cache report.
+    """
+
+    return {
+
+        "health": self.cache_health(),
+
+        "diagnostics": self.diagnostics(),
+
+        "statistics": self.smart_cache_report(),
+
+    }
+
+
 
