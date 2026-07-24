@@ -920,4 +920,127 @@ def cache_report(self):
     }
 
 
+# ======================================================
+# SAVE CACHE
+# ======================================================
+
+def save_cache(self):
+    """
+    Save memory cache to disk.
+    """
+
+    cache_file = self.cache_directory / "cache.json"
+
+    with open(cache_file, "w", encoding="utf-8") as file:
+
+        json.dump(self.memory_cache, file, indent=4)
+
+    return cache_file
+
+
+# ======================================================
+# LOAD CACHE
+# ======================================================
+
+def load_cache(self):
+    """
+    Load cache from disk.
+    """
+
+    cache_file = self.cache_directory / "cache.json"
+
+    if not cache_file.exists():
+
+        return False
+
+    with open(cache_file, "r", encoding="utf-8") as file:
+
+        self.memory_cache = json.load(file)
+
+    return True
+
+
+# ======================================================
+# BACKUP CACHE
+# ======================================================
+
+def backup_cache(self):
+    """
+    Create a cache backup.
+    """
+
+    return self.save_cache()
+
+
+# ======================================================
+# RESTORE CACHE
+# ======================================================
+
+def restore_cache(self):
+    """
+    Restore cache from backup.
+    """
+
+    return self.load_cache()
+
+
+# ======================================================
+# CACHE VERSION
+# ======================================================
+
+def cache_version(self):
+    """
+    Return cache version.
+    """
+
+    return "1.0.0"
+
+
+# ======================================================
+# CACHE INFORMATION
+# ======================================================
+
+def cache_information(self):
+    """
+    Return production cache information.
+    """
+
+    return {
+
+        "version": self.cache_version(),
+
+        "enabled": CACHE_ENABLED,
+
+        "directory": str(self.cache_directory),
+
+        "entries": self.cache_count(),
+
+        "hits": self.cache_hits,
+
+        "misses": self.cache_misses,
+
+    }
+
+
+# ======================================================
+# PRODUCTION CACHE CHECK
+# ======================================================
+
+def production_ready(self):
+    """
+    Verify cache is ready for production.
+    """
+
+    return {
+
+        "ready": CACHE_ENABLED,
+
+        "directory_exists": self.cache_directory.exists(),
+
+        "cache_entries": self.cache_count(),
+
+        "health": self.cache_health(),
+
+}
+
 
