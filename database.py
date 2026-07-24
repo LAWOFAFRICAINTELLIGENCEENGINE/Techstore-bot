@@ -2686,3 +2686,246 @@ def get_out_of_stock_items(self):
         ORDER BY product_name
         """
     )
+
+# ======================================================
+# CREATE CUSTOMER
+# ======================================================
+
+def create_customer(
+    self,
+    first_name,
+    last_name,
+    email,
+    phone="",
+    address="",
+    city="",
+    country="",
+):
+    """
+    Create a customer.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO customers
+        (
+            first_name,
+            last_name,
+            email,
+            phone,
+            address,
+            city,
+            country
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            first_name,
+            last_name,
+            email,
+            phone,
+            address,
+            city,
+            country,
+        ),
+    )
+
+
+# ======================================================
+# GET CUSTOMER
+# ======================================================
+
+def get_customer(self, customer_id):
+    """
+    Return one customer.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM customers
+        WHERE id = ?
+        """,
+        (customer_id,),
+    )
+
+
+# ======================================================
+# GET ALL CUSTOMERS
+# ======================================================
+
+def get_all_customers(self):
+    """
+    Return all customers.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM customers
+        ORDER BY first_name, last_name
+        """
+    )
+
+
+# ======================================================
+# SEARCH CUSTOMERS
+# ======================================================
+
+def search_customers(self, keyword):
+    """
+    Search customers.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM customers
+        WHERE
+            first_name LIKE ?
+            OR last_name LIKE ?
+            OR email LIKE ?
+            OR phone LIKE ?
+        ORDER BY first_name
+        """,
+        (
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+            f"%{keyword}%",
+        ),
+    )
+
+
+# ======================================================
+# UPDATE CUSTOMER
+# ======================================================
+
+def update_customer(
+    self,
+    customer_id,
+    first_name,
+    last_name,
+    email,
+    phone,
+    address,
+    city,
+    country,
+):
+    """
+    Update customer.
+    """
+
+    return self.update(
+        """
+        UPDATE customers
+        SET
+            first_name = ?,
+            last_name = ?,
+            email = ?,
+            phone = ?,
+            address = ?,
+            city = ?,
+            country = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            first_name,
+            last_name,
+            email,
+            phone,
+            address,
+            city,
+            country,
+            customer_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE CUSTOMER
+# ======================================================
+
+def delete_customer(self, customer_id):
+    """
+    Delete customer.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM customers
+        WHERE id = ?
+        """,
+        (customer_id,),
+    )
+
+
+# ======================================================
+# CUSTOMER EXISTS
+# ======================================================
+
+def customer_exists(self, customer_id):
+    """
+    Check whether a customer exists.
+    """
+
+    return self.get_customer(customer_id) is not None
+
+
+# ======================================================
+# CUSTOMER COUNT
+# ======================================================
+
+def customer_count(self):
+    """
+    Return total customers.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM customers
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# GET CUSTOMER BY EMAIL
+# ======================================================
+
+def get_customer_by_email(self, email):
+    """
+    Return customer using email.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM customers
+        WHERE email = ?
+        """,
+        (email,),
+    )
+
+
+# ======================================================
+# GET RECENT CUSTOMERS
+# ======================================================
+
+def get_recent_customers(self, limit=20):
+    """
+    Return recently registered customers.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM customers
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
