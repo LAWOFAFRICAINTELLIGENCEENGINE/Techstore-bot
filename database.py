@@ -6771,4 +6771,154 @@ def backup_statistics(self):
     return {
         "total_backups": self.backup_count(),
     }
+
+# ======================================================
+# DATABASE INTEGRITY CHECK
+# ======================================================
+
+def check_database_integrity(self):
+    """
+    Check database integrity.
+    """
+
+    if self.database_engine == "sqlite":
+
+        return self.fetch_one(
+            "PRAGMA integrity_check;"
+        )
+
+    return {
+        "status": "Not Supported"
+    }
+
+
+# ======================================================
+# VACUUM DATABASE
+# ======================================================
+
+def vacuum_database(self):
+    """
+    Optimize database storage.
+    """
+
+    if self.database_engine == "sqlite":
+
+        self.execute("VACUUM")
+
+        return True
+
+    return False
+
+
+# ======================================================
+# ANALYZE DATABASE
+# ======================================================
+
+def analyze_database(self):
+    """
+    Update database statistics.
+    """
+
+    self.execute("ANALYZE")
+
+    return True
+
+
+# ======================================================
+# CLEAN RESPONSE CACHE
+# ======================================================
+
+def clean_response_cache(self):
+    """
+    Remove all cached responses.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM response_cache
+        """
+    )
+
+
+# ======================================================
+# CLEAN LOGS
+# ======================================================
+
+def clean_logs(self):
+    """
+    Remove all logs.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM logs
+        """
+    )
+
+
+# ======================================================
+# CLEAN DIAGNOSTICS
+# ======================================================
+
+def clean_diagnostics(self):
+    """
+    Remove all diagnostics.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM diagnostics
+        """
+    )
+
+
+# ======================================================
+# CLEAN ANALYTICS
+# ======================================================
+
+def clean_analytics(self):
+    """
+    Remove analytics records.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM analytics
+        """
+    )
+
+
+# ======================================================
+# DATABASE SIZE
+# ======================================================
+
+def database_size(self):
+    """
+    Return database size.
+    """
+
+    if self.database_engine == "sqlite":
+
+        return self.database_path.stat().st_size
+
+    return None
+
+
+# ======================================================
+# DATABASE MAINTENANCE
+# ======================================================
+
+def perform_database_maintenance(self):
+    """
+    Run routine maintenance.
+    """
+
+    self.analyze_database()
+
+    if self.database_engine == "sqlite":
+        self.vacuum_database()
+
+    return {
+        "status": "completed"
+    }
     
