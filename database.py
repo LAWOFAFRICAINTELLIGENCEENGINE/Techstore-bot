@@ -4453,3 +4453,201 @@ def api_usage_statistics(self):
         "requests": self.api_usage_count(),
         "tokens": self.total_tokens_used(),
     }
+
+# ======================================================
+# CREATE DIAGNOSTIC
+# ======================================================
+
+def create_diagnostic(
+    self,
+    component,
+    severity,
+    message,
+    details="",
+    resolved=False,
+):
+    """
+    Store a diagnostic event.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO diagnostics
+        (
+            component,
+            severity,
+            message,
+            details,
+            resolved
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            component,
+            severity,
+            message,
+            details,
+            int(resolved),
+        ),
+    )
+
+
+# ======================================================
+# GET DIAGNOSTIC
+# ======================================================
+
+def get_diagnostic(self, diagnostic_id):
+    """
+    Return one diagnostic record.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM diagnostics
+        WHERE id = ?
+        """,
+        (diagnostic_id,),
+    )
+
+
+# ======================================================
+# GET ALL DIAGNOSTICS
+# ======================================================
+
+def get_all_diagnostics(self):
+    """
+    Return every diagnostic record.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM diagnostics
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET DIAGNOSTICS BY SEVERITY
+# ======================================================
+
+def get_diagnostics_by_severity(self, severity):
+    """
+    Return diagnostics filtered by severity.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM diagnostics
+        WHERE severity = ?
+        ORDER BY created_at DESC
+        """,
+        (severity,),
+    )
+
+
+# ======================================================
+# GET UNRESOLVED DIAGNOSTICS
+# ======================================================
+
+def get_unresolved_diagnostics(self):
+    """
+    Return unresolved diagnostics.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM diagnostics
+        WHERE resolved = 0
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# MARK DIAGNOSTIC RESOLVED
+# ======================================================
+
+def resolve_diagnostic(self, diagnostic_id):
+    """
+    Mark a diagnostic as resolved.
+    """
+
+    return self.update(
+        """
+        UPDATE diagnostics
+        SET
+            resolved = 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (diagnostic_id,),
+    )
+
+
+# ======================================================
+# DELETE DIAGNOSTIC
+# ======================================================
+
+def delete_diagnostic(self, diagnostic_id):
+    """
+    Delete a diagnostic record.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM diagnostics
+        WHERE id = ?
+        """,
+        (diagnostic_id,),
+    )
+
+
+# ======================================================
+# DIAGNOSTIC EXISTS
+# ======================================================
+
+def diagnostic_exists(self, diagnostic_id):
+    """
+    Check whether a diagnostic exists.
+    """
+
+    return self.get_diagnostic(diagnostic_id) is not None
+
+
+# ======================================================
+# DIAGNOSTIC COUNT
+# ======================================================
+
+def diagnostic_count(self):
+    """
+    Return total diagnostic records.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM diagnostics
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# DIAGNOSTIC STATISTICS
+# ======================================================
+
+def diagnostic_statistics(self):
+    """
+    Return diagnostic statistics.
+    """
+
+    return {
+        "total": self.diagnostic_count(),
+        "unresolved": len(self.get_unresolved_diagnostics()),
+    }
