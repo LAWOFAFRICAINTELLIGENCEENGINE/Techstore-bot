@@ -5114,3 +5114,217 @@ def uploaded_file_statistics(self):
         "files": self.uploaded_file_count(),
         "storage": self.total_storage_used(),
     }
+
+# ======================================================
+# CREATE IMAGE
+# ======================================================
+
+def create_image(
+    self,
+    user_id,
+    filename,
+    image_path,
+    width=0,
+    height=0,
+    image_format="",
+    generated_by="user",
+):
+    """
+    Register an image.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO images
+        (
+            user_id,
+            filename,
+            image_path,
+            width,
+            height,
+            image_format,
+            generated_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            filename,
+            image_path,
+            width,
+            height,
+            image_format,
+            generated_by,
+        ),
+    )
+
+
+# ======================================================
+# GET IMAGE
+# ======================================================
+
+def get_image(self, image_id):
+    """
+    Return one image.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM images
+        WHERE id = ?
+        """,
+        (image_id,),
+    )
+
+
+# ======================================================
+# GET ALL IMAGES
+# ======================================================
+
+def get_all_images(self):
+    """
+    Return all images.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM images
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET USER IMAGES
+# ======================================================
+
+def get_user_images(self, user_id):
+    """
+    Return images for a user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM images
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SEARCH IMAGES
+# ======================================================
+
+def search_images(self, keyword):
+    """
+    Search images by filename.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM images
+        WHERE filename LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (f"%{keyword}%",),
+    )
+
+
+# ======================================================
+# UPDATE IMAGE
+# ======================================================
+
+def update_image(
+    self,
+    image_id,
+    filename,
+    image_path,
+):
+    """
+    Update image information.
+    """
+
+    return self.update(
+        """
+        UPDATE images
+        SET
+            filename = ?,
+            image_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            filename,
+            image_path,
+            image_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE IMAGE
+# ======================================================
+
+def delete_image(self, image_id):
+    """
+    Delete an image.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM images
+        WHERE id = ?
+        """,
+        (image_id,),
+    )
+
+
+# ======================================================
+# IMAGE EXISTS
+# ======================================================
+
+def image_exists(self, image_id):
+    """
+    Check whether an image exists.
+    """
+
+    return self.get_image(image_id) is not None
+
+
+# ======================================================
+# IMAGE COUNT
+# ======================================================
+
+def image_count(self):
+    """
+    Return total images.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM images
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# IMAGE STATISTICS
+# ======================================================
+
+def image_statistics(self):
+    """
+    Return image statistics.
+    """
+
+    return {
+        "images": self.image_count(),
+    }
