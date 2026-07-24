@@ -5756,3 +5756,214 @@ def voice_statistics(self):
     return {
         "voice_recordings": self.voice_count(),
     }
+
+# ======================================================
+# CREATE DOCUMENT
+# ======================================================
+
+def create_document(
+    self,
+    user_id,
+    filename,
+    document_path,
+    document_type,
+    file_size=0,
+    generated_by="user",
+):
+    """
+    Register a document.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO documents
+        (
+            user_id,
+            filename,
+            document_path,
+            document_type,
+            file_size,
+            generated_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            filename,
+            document_path,
+            document_type,
+            file_size,
+            generated_by,
+        ),
+    )
+
+
+# ======================================================
+# GET DOCUMENT
+# ======================================================
+
+def get_document(self, document_id):
+    """
+    Return one document.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM documents
+        WHERE id = ?
+        """,
+        (document_id,),
+    )
+
+
+# ======================================================
+# GET ALL DOCUMENTS
+# ======================================================
+
+def get_all_documents(self):
+    """
+    Return all documents.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM documents
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET USER DOCUMENTS
+# ======================================================
+
+def get_user_documents(self, user_id):
+    """
+    Return all documents for one user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM documents
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SEARCH DOCUMENTS
+# ======================================================
+
+def search_documents(self, keyword):
+    """
+    Search documents.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM documents
+        WHERE filename LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (f"%{keyword}%",),
+    )
+
+
+# ======================================================
+# UPDATE DOCUMENT
+# ======================================================
+
+def update_document(
+    self,
+    document_id,
+    filename,
+    document_path,
+):
+    """
+    Update document information.
+    """
+
+    return self.update(
+        """
+        UPDATE documents
+        SET
+            filename = ?,
+            document_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            filename,
+            document_path,
+            document_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE DOCUMENT
+# ======================================================
+
+def delete_document(self, document_id):
+    """
+    Delete a document.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM documents
+        WHERE id = ?
+        """,
+        (document_id,),
+    )
+
+
+# ======================================================
+# DOCUMENT EXISTS
+# ======================================================
+
+def document_exists(self, document_id):
+    """
+    Check whether a document exists.
+    """
+
+    return self.get_document(document_id) is not None
+
+
+# ======================================================
+# DOCUMENT COUNT
+# ======================================================
+
+def document_count(self):
+    """
+    Return total documents.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM documents
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# DOCUMENT STATISTICS
+# ======================================================
+
+def document_statistics(self):
+    """
+    Return document statistics.
+    """
+
+    return {
+        "documents": self.document_count(),
+    }
