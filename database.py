@@ -87,6 +87,9 @@ else:
 # Automatically create database schema
     self.initialize_schema()
 
+    # Authentication Sessions
+self.create_sessions_table()
+
     # ======================================================
     # SQLITE INITIALIZATION
     # ======================================================
