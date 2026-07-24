@@ -320,4 +320,151 @@ def cache_count(self):
     """
 
     return len(self.memory_cache)
+
+# ======================================================
+# AI CACHE KEY
+# ======================================================
+
+def generate_ai_key(self, prompt, context=""):
+    """
+    Generate a unique cache key for AI requests.
+    """
+
+    combined = f"{prompt}|{context}"
+
+    return self.generate_key(combined)
+
+
+# ======================================================
+# CACHE AI RESPONSE
+# ======================================================
+
+def cache_ai_response(
+    self,
+    prompt,
+    response,
+    context="",
+    ttl=CACHE_DEFAULT_TTL,
+):
+    """
+    Store an AI response.
+    """
+
+    key = self.generate_ai_key(
+        prompt,
+        context,
+    )
+
+    return self.set(
+        key,
+        response,
+        ttl,
+    )
+
+
+# ======================================================
+# GET AI RESPONSE
+# ======================================================
+
+def get_cached_ai_response(
+    self,
+    prompt,
+    context="",
+):
+    """
+    Return cached AI response.
+    """
+
+    key = self.generate_ai_key(
+        prompt,
+        context,
+    )
+
+    return self.get(key)
+
+
+# ======================================================
+# AI CACHE EXISTS
+# ======================================================
+
+def ai_response_exists(
+    self,
+    prompt,
+    context="",
+):
+    """
+    Check whether an AI response exists.
+    """
+
+    return (
+        self.get_cached_ai_response(
+            prompt,
+            context,
+        )
+        is not None
+    )
+
+
+# ======================================================
+# DELETE AI RESPONSE
+# ======================================================
+
+def delete_ai_response(
+    self,
+    prompt,
+    context="",
+):
+    """
+    Delete cached AI response.
+    """
+
+    key = self.generate_ai_key(
+        prompt,
+        context,
+    )
+
+    return self.delete(key)
+
+
+# ======================================================
+# CLEAR AI CACHE
+# ======================================================
+
+def clear_ai_cache(self):
+    """
+    Clear all cached AI responses.
+    """
+
+    return self.clear()
+
+
+# ======================================================
+# AI CACHE STATISTICS
+# ======================================================
+
+def ai_cache_statistics(self):
+    """
+    Return AI cache statistics.
+    """
+
+    return {
+
+        "cached_items": self.cache_count(),
+
+        "cache_hits": self.cache_hits,
+
+        "cache_misses": self.cache_misses,
+
+        "hit_rate": (
+            self.cache_hits /
+            max(
+                self.cache_hits +
+                self.cache_misses,
+                1,
+            )
+        ) * 100,
+
+    }
+
+
     
