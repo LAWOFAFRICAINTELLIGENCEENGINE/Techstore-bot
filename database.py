@@ -5328,3 +5328,217 @@ def image_statistics(self):
     return {
         "images": self.image_count(),
     }
+
+# ======================================================
+# CREATE VIDEO
+# ======================================================
+
+def create_video(
+    self,
+    user_id,
+    filename,
+    video_path,
+    duration=0,
+    resolution="",
+    video_format="",
+    generated_by="user",
+):
+    """
+    Register a video.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO videos
+        (
+            user_id,
+            filename,
+            video_path,
+            duration,
+            resolution,
+            video_format,
+            generated_by
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            filename,
+            video_path,
+            duration,
+            resolution,
+            video_format,
+            generated_by,
+        ),
+    )
+
+
+# ======================================================
+# GET VIDEO
+# ======================================================
+
+def get_video(self, video_id):
+    """
+    Return one video.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM videos
+        WHERE id = ?
+        """,
+        (video_id,),
+    )
+
+
+# ======================================================
+# GET ALL VIDEOS
+# ======================================================
+
+def get_all_videos(self):
+    """
+    Return all videos.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM videos
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET USER VIDEOS
+# ======================================================
+
+def get_user_videos(self, user_id):
+    """
+    Return videos for a user.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM videos
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (user_id,),
+    )
+
+
+# ======================================================
+# SEARCH VIDEOS
+# ======================================================
+
+def search_videos(self, keyword):
+    """
+    Search videos.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM videos
+        WHERE filename LIKE ?
+        ORDER BY created_at DESC
+        """,
+        (f"%{keyword}%",),
+    )
+
+
+# ======================================================
+# UPDATE VIDEO
+# ======================================================
+
+def update_video(
+    self,
+    video_id,
+    filename,
+    video_path,
+):
+    """
+    Update video information.
+    """
+
+    return self.update(
+        """
+        UPDATE videos
+        SET
+            filename = ?,
+            video_path = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            filename,
+            video_path,
+            video_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE VIDEO
+# ======================================================
+
+def delete_video(self, video_id):
+    """
+    Delete video.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM videos
+        WHERE id = ?
+        """,
+        (video_id,),
+    )
+
+
+# ======================================================
+# VIDEO EXISTS
+# ======================================================
+
+def video_exists(self, video_id):
+    """
+    Check whether a video exists.
+    """
+
+    return self.get_video(video_id) is not None
+
+
+# ======================================================
+# VIDEO COUNT
+# ======================================================
+
+def video_count(self):
+    """
+    Return total videos.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM videos
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# VIDEO STATISTICS
+# ======================================================
+
+def video_statistics(self):
+    """
+    Return video statistics.
+    """
+
+    return {
+        "videos": self.video_count(),
+    }
