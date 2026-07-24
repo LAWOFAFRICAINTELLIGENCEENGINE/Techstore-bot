@@ -6185,3 +6185,191 @@ def health_report_statistics(self):
         "critical": len(self.get_health_reports_by_status("Critical")),
     }
     
+# ======================================================
+# CREATE PERFORMANCE REPORT
+# ======================================================
+
+def create_performance_report(
+    self,
+    component,
+    execution_time,
+    cpu_usage=0.0,
+    memory_usage=0.0,
+    requests_processed=0,
+    notes="",
+):
+    """
+    Store a performance report.
+    """
+
+    return self.insert(
+        """
+        INSERT INTO performance_reports
+        (
+            component,
+            execution_time,
+            cpu_usage,
+            memory_usage,
+            requests_processed,
+            notes
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            component,
+            execution_time,
+            cpu_usage,
+            memory_usage,
+            requests_processed,
+            notes,
+        ),
+    )
+
+
+# ======================================================
+# GET PERFORMANCE REPORT
+# ======================================================
+
+def get_performance_report(self, report_id):
+    """
+    Return one performance report.
+    """
+
+    return self.fetch_one(
+        """
+        SELECT *
+        FROM performance_reports
+        WHERE id = ?
+        """,
+        (report_id,),
+    )
+
+
+# ======================================================
+# GET ALL PERFORMANCE REPORTS
+# ======================================================
+
+def get_all_performance_reports(self):
+    """
+    Return all performance reports.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM performance_reports
+        ORDER BY created_at DESC
+        """
+    )
+
+
+# ======================================================
+# GET REPORTS BY COMPONENT
+# ======================================================
+
+def get_performance_reports_by_component(self, component):
+    """
+    Return reports for one component.
+    """
+
+    return self.fetch_all(
+        """
+        SELECT *
+        FROM performance_reports
+        WHERE component = ?
+        ORDER BY created_at DESC
+        """,
+        (component,),
+    )
+
+
+# ======================================================
+# UPDATE PERFORMANCE REPORT
+# ======================================================
+
+def update_performance_report(
+    self,
+    report_id,
+    notes,
+):
+    """
+    Update a performance report.
+    """
+
+    return self.update(
+        """
+        UPDATE performance_reports
+        SET
+            notes = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (
+            notes,
+            report_id,
+        ),
+    )
+
+
+# ======================================================
+# DELETE PERFORMANCE REPORT
+# ======================================================
+
+def delete_performance_report(self, report_id):
+    """
+    Delete a performance report.
+    """
+
+    return self.delete(
+        """
+        DELETE FROM performance_reports
+        WHERE id = ?
+        """,
+        (report_id,),
+    )
+
+
+# ======================================================
+# PERFORMANCE REPORT EXISTS
+# ======================================================
+
+def performance_report_exists(self, report_id):
+    """
+    Check whether a performance report exists.
+    """
+
+    return self.get_performance_report(report_id) is not None
+
+
+# ======================================================
+# PERFORMANCE REPORT COUNT
+# ======================================================
+
+def performance_report_count(self):
+    """
+    Return total performance reports.
+    """
+
+    row = self.fetch_one(
+        """
+        SELECT COUNT(*) AS total
+        FROM performance_reports
+        """
+    )
+
+    return row["total"]
+
+
+# ======================================================
+# PERFORMANCE STATISTICS
+# ======================================================
+
+def performance_statistics(self):
+    """
+    Return performance statistics.
+    """
+
+    return {
+        "reports": self.performance_report_count(),
+    }
+    
